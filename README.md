@@ -17,4 +17,8 @@ Aguirre Alvarez J Giovanni
 giovanni.fi05@gmail.com
 @DiganmeGiovanni
 
+Cirilo Gonzalez Edgar
+edcirilo_9216@live.com.mx
+@eddy16
+
 --
