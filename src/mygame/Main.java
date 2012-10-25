@@ -32,6 +32,7 @@ public class Main extends SimpleApplication {
         System.out.println("Elementos");
         //Luego agrego otra linea
         //Comentarios added
+        //Parece que se soluciono el conflicto
     }
 
     @Override
