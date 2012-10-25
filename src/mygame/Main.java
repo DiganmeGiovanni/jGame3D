@@ -29,7 +29,7 @@ public class Main extends SimpleApplication {
         geom.setMaterial(mat);
 
         rootNode.attachChild(geom);
-        
+        System.out.println("Elementos");
     }
 
     @Override
