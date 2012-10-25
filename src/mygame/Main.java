@@ -29,8 +29,7 @@ public class Main extends SimpleApplication {
         geom.setMaterial(mat);
 
         rootNode.attachChild(geom);
-        System.out.println("Giovanni esta modificando esto");
-        System.out.println("Ahora lo modificamos desde el portal web");
+        
     }
 
     @Override
