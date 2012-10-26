@@ -30,9 +30,6 @@ public class Main extends SimpleApplication {
 
         rootNode.attachChild(geom);
         System.out.println("Elementos");
-        //Luego agrego otra linea
-        //Comentarios added
-        //Parece que se soluciono el conflicto
     }
 
     @Override
