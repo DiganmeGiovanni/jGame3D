@@ -1,0 +1,2 @@
+Este directorio es para los modelos graficos
+Los archivos de este directorio deben estar en formato (.j3o)

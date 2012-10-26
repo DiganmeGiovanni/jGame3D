@@ -1,0 +1,5 @@
+Este directorio es para las texturas utilizadas y los modelos en 
+blender deben colocarse aqui y posteriormete convertirse a ".j3o"
+y mover el ".j3o" al directorio de Models
+
+(texturas en: .png, .jpg && Modelos en .blend .zip .obj)
