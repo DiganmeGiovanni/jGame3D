@@ -9,6 +9,10 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
 /**
+ * Muestra simple de como agregar y mostrar un cubo en un escenario, por 
+ * default JME nos genera los controles para mover la camara con
+ * las teclas de direccion y para mover el cubo con w,s,d,a
+ * 
  * test
  * @author normenhansen
  */
@@ -29,7 +33,6 @@ public class Main extends SimpleApplication {
         geom.setMaterial(mat);
 
         rootNode.attachChild(geom);
-        System.out.println("Elementos");
     }
 
     @Override
