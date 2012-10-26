@@ -33,6 +33,7 @@ public class Main extends SimpleApplication {
         //Luego agrego otra linea
         //Comentarios added
         //Parece que se soluciono el conflicto
+        System.out.println("Nueva clase y otra modificada");
     }
 
     @Override
