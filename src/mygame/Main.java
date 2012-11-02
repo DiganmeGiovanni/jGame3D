@@ -1,11 +1,14 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 
 /**
@@ -24,15 +27,28 @@ public class Main extends SimpleApplication {
     }
 
     @Override
-    public void simpleInitApp() {
-        Box b = new Box(Vector3f.ZERO, 1, 1, 1);
-        Geometry geom = new Geometry("Box", b);
-
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setColor("Color", ColorRGBA.Blue);
-        geom.setMaterial(mat);
-
-        rootNode.attachChild(geom);
+    public void simpleInitApp() 
+    {
+        flyCam.setMoveSpeed(100);
+        Spatial escena = assetManager.loadModel("Scenes/PradoConBasura.j3o");
+        escena.setLocalScale(4f);
+        escena.setLocalTranslation(0f, -10f, 0f);
+        rootNode.attachChild(escena);
+        
+        configurarLuces();
+    }
+    
+    private void configurarLuces() 
+    {
+        // Agregamos luces para poder ver la escena
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.White.mult(1.3f));
+        rootNode.addLight(al);
+        
+        DirectionalLight dl = new DirectionalLight();
+        dl.setColor(ColorRGBA.White);
+        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        rootNode.addLight(dl);
     }
 
     @Override
