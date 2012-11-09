@@ -25,11 +25,13 @@ public class DulceHogar extends SimpleApplication
     private Material matPasto;
     private Material matRoca;
     private Material matCamino;
+    private Material matMadera;
     
     // Elementos de la escena
     private static final Box suelo;
     private static Node montana = new Node("Montañas");
     private static Node camino  = new Node("Camino");  // Camino para subir a casa
+    private static Node barandal= new Node("Barandal"); //Cerca de seguridad
     
     static
     {
@@ -51,6 +53,7 @@ public class DulceHogar extends SimpleApplication
         crearSuelo();
         crearMontanas();
         crearCamino();
+        crearBarandales();
     }
     
     /** Crea y configura los materiales utilizados en la escena */
@@ -87,6 +90,14 @@ public class DulceHogar extends SimpleApplication
         Texture texCamino = assetManager.loadTexture(keyCamino);
         texCamino.setWrap(Texture.WrapMode.Repeat);
         matCamino.setTexture("ColorMap", texCamino);
+        
+        // MADERA
+        matMadera = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        TextureKey keyMadera = new TextureKey("Textures/maderaVieja.jpg");
+        keyMadera.setGenerateMips(true);
+        Texture texMadera = assetManager.loadTexture(keyMadera);
+        texMadera.setWrap(Texture.WrapMode.Repeat);
+        matMadera.setTexture("ColorMap", texMadera);
     }
 
     /** Crea el suelo y lo agrega a la raiz */
@@ -140,12 +151,79 @@ public class DulceHogar extends SimpleApplication
     /** Crea una rampa para llegar a la parte alta de la escena*/
     private void crearCamino() 
     {
-        Box caminoCentral = new Box(Vector3f.ZERO, 100, 0.1f, 600);
-        caminoCentral.scaleTextureCoordinates(new Vector2f(5, 50));
+        Box caminoCentral = new Box(Vector3f.ZERO, 100, 0.1f, 550);
+        caminoCentral.scaleTextureCoordinates(new Vector2f(25, 12.5f));
         Geometry geomCamCentral = new Geometry("Camino central", caminoCentral);
         geomCamCentral.setMaterial(matCamino);
-        geomCamCentral.setLocalTranslation(0, 200, -250);
+        geomCamCentral.setLocalTranslation(0, 180, -350);
+        geomCamCentral.rotate((float)Math.toRadians(20), 0, 0);
+        camino.attachChild(geomCamCentral);
         
-        rootNode.attachChild(geomCamCentral);
+        Box camLateral = new Box(Vector3f.ZERO, 25, 0.1f, 550);
+        camLateral.scaleTextureCoordinates(new Vector2f(75, 6f));
+        Geometry geomCamLateral = new Geometry("Camino lateral", camLateral);
+        geomCamLateral.setMaterial(matPasto);
+        geomCamLateral.setLocalTranslation(-125, 180, -350);
+        geomCamLateral.rotate((float)Math.toRadians(20), 0, 0);
+        camino.attachChild(geomCamLateral);
+        
+        Geometry geomCamLateral2 = geomCamLateral.clone(true);
+        geomCamLateral2.move(250, 0, 0);
+        camino.attachChild(geomCamLateral2);
+        
+        Geometry geomCamLat = geomCamLateral.clone(false);
+        geomCamLat.setMaterial(matTierra);
+        geomCamLat.move(-50, 0, 0);
+        camino.attachChild(geomCamLat);
+        
+        Geometry geomCamLat2 = geomCamLat.clone(true);
+        geomCamLat2.move(350, 0, 0);
+        camino.attachChild(geomCamLat2);
+        
+        rootNode.attachChild(camino);
+    }
+
+    /** Crea cercas protectores para los limites del terreno */
+    private void crearBarandales() 
+    {
+        // Postes verticales
+        Box vertical = new Box(Vector3f.ZERO, 3, 40, 3);
+        vertical.scaleTextureCoordinates(new Vector2f(1, 1));
+        for (int i=1,x=0; i<=6; i++,x+=30) 
+        {
+            Geometry verticalGeom = new Geometry("Barandal vertical", vertical);
+            verticalGeom.setMaterial(matMadera);
+            verticalGeom.setLocalTranslation(x, 40, 200);
+            barandal.attachChild(verticalGeom);
+        }
+        
+        // Postes horizontales
+        Box horizontal = new Box(Vector3f.ZERO, 3, 75, 1.5f);
+        horizontal.scaleTextureCoordinates(new Vector2f(1, 1));
+        for (int i=1,y=17; i<=4; i++,y+=20) 
+        {
+            Geometry horizontalGeom = new Geometry("Barandal horizontal", horizontal);
+            horizontalGeom.setMaterial(matMadera);
+            horizontalGeom.setLocalTranslation(75, y, 200);
+            horizontalGeom.rotate(0, 0, (float)Math.toRadians(90));
+            barandal.attachChild(horizontalGeom);
+        }
+        
+        posicionarBarandales(barandal);
+    }
+
+    /** Coloca barandales en las posiciones necesarias */
+    private void posicionarBarandales(Node barandal) 
+    {
+        barandal.setLocalTranslation(-697, 0, 797);
+        rootNode.attachChild(barandal);
+        
+        int x=0;
+        for (int i=1; i<=9; i++,x+=150) 
+        {
+            Node tmp = barandal.clone(false);
+            tmp.move(x, 0, 0);
+            rootNode.attachChild(tmp);
+        }
     }
 }
