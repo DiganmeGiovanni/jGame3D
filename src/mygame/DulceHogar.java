@@ -30,8 +30,8 @@ public class DulceHogar extends SimpleApplication
     // Elementos de la escena
     private static final Box suelo;
     private static Node montana = new Node("Montañas");
-    private static Node camino  = new Node("Camino");  // Camino para subir a casa
-    private static Node barandal= new Node("Barandal"); //Cerca de seguridad
+    private static Node camino  = new Node("Camino");   // Camino para subir a casa
+    private static Node barandal= new Node("Barandal"); // Cerca de seguridad
     
     static
     {
@@ -54,6 +54,7 @@ public class DulceHogar extends SimpleApplication
         crearMontanas();
         crearCamino();
         crearBarandales();
+        agregarCasa();
     }
     
     /** Crea y configura los materiales utilizados en la escena */
@@ -91,7 +92,7 @@ public class DulceHogar extends SimpleApplication
         texCamino.setWrap(Texture.WrapMode.Repeat);
         matCamino.setTexture("ColorMap", texCamino);
         
-        // MADERA
+        // MADERA VIEJA
         matMadera = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         TextureKey keyMadera = new TextureKey("Textures/maderaVieja.jpg");
         keyMadera.setGenerateMips(true);
@@ -189,7 +190,7 @@ public class DulceHogar extends SimpleApplication
         // Postes verticales
         Box vertical = new Box(Vector3f.ZERO, 3, 40, 3);
         vertical.scaleTextureCoordinates(new Vector2f(1, 1));
-        for (int i=1,x=0; i<=6; i++,x+=30) 
+        for (int i=1,x=30; i<=5; i++,x+=30) 
         {
             Geometry verticalGeom = new Geometry("Barandal vertical", vertical);
             verticalGeom.setMaterial(matMadera);
@@ -200,7 +201,7 @@ public class DulceHogar extends SimpleApplication
         // Postes horizontales
         Box horizontal = new Box(Vector3f.ZERO, 3, 75, 1.5f);
         horizontal.scaleTextureCoordinates(new Vector2f(1, 1));
-        for (int i=1,y=17; i<=4; i++,y+=20) 
+        for (int i=1,y=16; i<=4; i++,y+=20) 
         {
             Geometry horizontalGeom = new Geometry("Barandal horizontal", horizontal);
             horizontalGeom.setMaterial(matMadera);
@@ -216,14 +217,63 @@ public class DulceHogar extends SimpleApplication
     private void posicionarBarandales(Node barandal) 
     {
         barandal.setLocalTranslation(-697, 0, 797);
-        rootNode.attachChild(barandal);
+        //rootNode.attachChild(barandal);
         
-        int x=0;
-        for (int i=1; i<=9; i++,x+=150) 
+        for (int i=1,x=0; i<=9; i++,x+=150) 
         {
+            // Del frente
             Node tmp = barandal.clone(false);
             tmp.move(x, 0, 0);
             rootNode.attachChild(tmp);
+            
+            // Del fondo
+            Node tmp2 = barandal.clone(false);
+            tmp2.move(x, 410, -1994);
+            rootNode.attachChild(tmp2);
+        }
+        
+        // Laterales parte baja
+        for (int i=1,z=50; i<=5; i++,z-=150) 
+        {   
+            // Lado derecho
+            Node tmp = barandal.clone(false);
+            tmp.move(200f, 0, z);
+            tmp.rotate(0, (float)Math.toRadians(-90), 0);
+            rootNode.attachChild(tmp);
+            
+            // Lado izquierdo
+            Node tmp2 = barandal.clone(false);
+            tmp2.move(1594f, 0, z);
+            tmp2.rotate(0, (float)Math.toRadians(-90), 0);
+            rootNode.attachChild(tmp2);
+        }
+        
+        // Laterales de las montanas
+        for (int i=1,z=47,y=110; i<=4; i++,y+=100) 
+        {
+            for (int j=1; j<=2; j++,z-=150) 
+            {
+                Node tmp = barandal.clone(false);
+                tmp.setLocalTranslation(-497, y, z);
+                tmp.rotate(0, (float)Math.toRadians(-90), 0);
+                rootNode.attachChild(tmp);
+
+                Node tmp2 = barandal.clone(false);
+                tmp2.setLocalTranslation(897, y, z);
+                tmp2.rotate(0, (float)Math.toRadians(-90), 0);
+                rootNode.attachChild(tmp2);
+            }
+            
         }
     }
+
+    private void agregarCasa() 
+    {
+        Node casa = new CabanaMadera(assetManager).getNodoRaiz();
+        casa.scale(0.5f);
+        casa.setLocalTranslation(600, 365, -850);
+        casa.rotate(0, (float)Math.toRadians(-90), 0);
+        rootNode.attachChild(casa);
+    }
+
 }
