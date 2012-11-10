@@ -6,7 +6,13 @@ package mygame;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.asset.TextureKey;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
@@ -20,6 +26,8 @@ import com.jme3.texture.Texture;
  */
 public class DulceHogar extends SimpleApplication
 {
+    private RigidBodyControl rigidBodyControl; //Para deteccion de colisiones
+    
     //Materiales de la escena
     private Material matTierra;
     private Material matPasto;
@@ -48,6 +56,9 @@ public class DulceHogar extends SimpleApplication
     @Override
     public void simpleInitApp() 
     {
+        // Ponemos azul el cielo
+        viewPort.setBackgroundColor(new ColorRGBA(0f, 0.36f, 0.79f, 0f));
+        
         flyCam.setMoveSpeed(150);
         initMaterials();
         crearSuelo();
@@ -55,6 +66,9 @@ public class DulceHogar extends SimpleApplication
         crearCamino();
         crearBarandales();
         agregarCasa();
+        
+        configurarLuces();
+        configurarFisica();
     }
     
     /** Crea y configura los materiales utilizados en la escena */
@@ -267,6 +281,7 @@ public class DulceHogar extends SimpleApplication
         }
     }
 
+    /** Agrega una casa a la escena */
     private void agregarCasa() 
     {
         Node casa = new CabanaMadera(assetManager).getNodoRaiz();
@@ -274,6 +289,30 @@ public class DulceHogar extends SimpleApplication
         casa.setLocalTranslation(600, 365, -850);
         casa.rotate(0, (float)Math.toRadians(-90), 0);
         rootNode.attachChild(casa);
+    }
+
+    /**
+     * Activa la deteccion de colisiones en la escena
+     * (Para que los jugadores no atraviesen las paredes, suelo o elementos)
+     */
+    private void configurarFisica() 
+    {
+        CollisionShape escenaShape = CollisionShapeFactory.createMeshShape(rootNode);
+        rigidBodyControl = new RigidBodyControl(escenaShape, 0);
+        rootNode.addControl(rigidBodyControl);
+    }
+    
+    /** Configura las fuentes de luz de la escena*/
+    private void configurarLuces() 
+    {
+        AmbientLight al = new AmbientLight();
+        al.setColor(ColorRGBA.Gray.mult(1.3f));
+        rootNode.addLight(al);
+        
+        DirectionalLight dl = new DirectionalLight();
+        dl.setColor(ColorRGBA.LightGray);
+        dl.setDirection(new Vector3f(1f, -1, -1).normalizeLocal());
+        rootNode.addLight(dl);
     }
 
 }
