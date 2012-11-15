@@ -8,6 +8,7 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
+import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
@@ -18,6 +19,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
+import java.io.File;
 
 /**
  *
@@ -213,10 +215,10 @@ public class MainPrado extends SimpleApplication implements ActionListener {
     public void segundero() {
         // Display a line of text with a default font
         guiNode.detachAllChildren();
-        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        guiFont = assetManager.loadFont("Interface/Battlefield28.fnt");
         BitmapText text = new BitmapText(guiFont, false);
         text.setSize(guiFont.getCharSet().getRenderedSize());
-        text.setColor(ColorRGBA.Blue);
+        text.setColor(ColorRGBA.White);
         HiloSegundos hs = new HiloSegundos(text);
         hs.start();
         text.setLocalTranslation(380, 21 * 27, 0);
@@ -224,7 +226,9 @@ public class MainPrado extends SimpleApplication implements ActionListener {
 
     }
 
-    public void score() {
+    public void score() {        
+                
+       
         Picture pScore = new Picture("HUD score");
         pScore.setImage(assetManager, "Interface/score.png", true);
         pScore.setWidth(32);
@@ -232,10 +236,10 @@ public class MainPrado extends SimpleApplication implements ActionListener {
         pScore.setPosition(100, 21 * 26);
         guiNode.attachChild(pScore);
 
-        guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        guiFont = assetManager.loadFont("Interface/Battlefield28.fnt");//assetManager.loadFont("Interface/Fonts/Default.fnt");
         textScore = new BitmapText(guiFont, false);
         textScore.setSize(guiFont.getCharSet().getRenderedSize());
-        textScore.setColor(ColorRGBA.Blue);
+        textScore.setColor(ColorRGBA.White);
         textScore.setText("" + score);
         textScore.setLocalTranslation(150, 21 * 27, 0);
         guiNode.attachChild(textScore);
