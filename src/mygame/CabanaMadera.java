@@ -15,6 +15,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Cylinder;
 import com.jme3.texture.Texture;
 
 /**
@@ -32,6 +33,8 @@ public class CabanaMadera
     private Material matTecho;
     private Material matChimeneaPiedra;
     private Material matInteriorChimenea;
+    private Material matTapete;
+    private Material madera;
     
     /**
      * Construye una nueva instancia del modelo y adjunta todos sus elementos
@@ -48,6 +51,8 @@ public class CabanaMadera
         crearTecho();
         creatChimenea();
         encenderChimenea();
+        crearTapete();
+        crearMesa();
     }
 
     /** Inicializa los materiales utilizados en el modelo */
@@ -92,6 +97,22 @@ public class CabanaMadera
         Texture texIntChim = assetManager.loadTexture(keyInteriorChim);
         texIntChim.setWrap(Texture.WrapMode.Repeat);
         matInteriorChimenea.setTexture("ColorMap", texIntChim);
+        
+        // TAPETE
+        matTapete = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        TextureKey keyTapete = new TextureKey("Textures/tapete.jpg");
+        keyTapete.setGenerateMips(true);
+        Texture texTapete = assetManager.loadTexture(keyTapete);
+        texTapete.setWrap(Texture.WrapMode.Repeat);
+        matTapete.setTexture("ColorMap", texTapete);
+        
+        // MADERA
+        madera = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        TextureKey keyMadera = new TextureKey("Textures/madera.jpg");
+        keyMadera.setGenerateMips(true);
+        Texture texMadera = assetManager.loadTexture(keyMadera);
+        texMadera.setWrap(Texture.WrapMode.Repeat);
+        madera.setTexture("ColorMap", texMadera);
     }
     
     /** Crea la plataforma de base de la cabana */
@@ -249,6 +270,45 @@ public class CabanaMadera
         llama.setLocalTranslation(0, 122, 135);
         llama.scale(50);
         nodoRaiz.attachChild(llama);
+    }
+    
+    /** Agrega un tapete/alfombra a la casa */
+    private void crearTapete()
+    {
+        Box tapete = new Box(Vector3f.ZERO, 70, 0.1f, 45);
+        tapete.scaleTextureCoordinates(new Vector2f(1, 1));
+        Geometry geomTapete = new Geometry("Tapete", tapete);
+        geomTapete.setMaterial(matTapete);
+        geomTapete.setLocalTranslation(0, 110.1f, 235);
+        nodoRaiz.attachChild(geomTapete);
+    }
+    
+    /** Agrega una mesa de centro sobre el tapete */
+    private void crearMesa()
+    {
+        // Base de la mesa
+        Box base = new Box(Vector3f.ZERO, 8, 0.5f, 8);
+        base.scaleTextureCoordinates(new Vector2f(1, 1));
+        Geometry geomBase = new Geometry("Base de la mesa", base);
+        geomBase.setMaterial(madera);
+        geomBase.setLocalTranslation(0, 110.5f, 235);
+        nodoRaiz.attachChild(geomBase);
+        
+        // Parte media de la mesa
+        Box medio = new Box(Vector3f.ZERO, 2, 7, 2);
+        medio.scaleTextureCoordinates(new Vector2f(1, 1));
+        Geometry geomMedia = new Geometry("Base de la mesa", medio);
+        geomMedia.setMaterial(madera);
+        geomMedia.setLocalTranslation(0, 117.5f, 235);
+        nodoRaiz.attachChild(geomMedia);
+        
+        // Parte alta de la mesa
+        Box mesa = new Box(Vector3f.ZERO, 15, 1, 15);
+        mesa.scaleTextureCoordinates(new Vector2f(1, 1));
+        Geometry geomMesa = new Geometry("Base de la mesa", mesa);
+        geomMesa.setMaterial(madera);
+        geomMesa.setLocalTranslation(0, 125.5f, 235);
+        nodoRaiz.attachChild(geomMesa);
     }
     
     /** 

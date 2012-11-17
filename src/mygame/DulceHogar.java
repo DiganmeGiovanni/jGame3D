@@ -34,12 +34,14 @@ public class DulceHogar extends SimpleApplication
     private Material matRoca;
     private Material matCamino;
     private Material matMadera;
+    private Material matPiedra;
     
     // Elementos de la escena
     private static final Box suelo;
     private static Node montana = new Node("Montañas");
     private static Node camino  = new Node("Camino");   // Camino para subir a casa
     private static Node barandal= new Node("Barandal"); // Cerca de seguridad
+    private static Node puente  = new Node("Puente");   // Puente de roca
     
     static
     {
@@ -59,12 +61,13 @@ public class DulceHogar extends SimpleApplication
         // Ponemos azul el cielo
         viewPort.setBackgroundColor(new ColorRGBA(0f, 0.36f, 0.79f, 0f));
         
-        flyCam.setMoveSpeed(150);
+        flyCam.setMoveSpeed(300);
         initMaterials();
         crearSuelo();
         crearMontanas();
         crearCamino();
         crearBarandales();
+        crearPuente();
         agregarCasa();
         
         configurarLuces();
@@ -113,6 +116,14 @@ public class DulceHogar extends SimpleApplication
         Texture texMadera = assetManager.loadTexture(keyMadera);
         texMadera.setWrap(Texture.WrapMode.Repeat);
         matMadera.setTexture("ColorMap", texMadera);
+        
+        // PARED DE PIEDRA
+        matPiedra = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        TextureKey keyPiedra = new TextureKey("Textures/paredPiedra.jpg");
+        keyPiedra.setGenerateMips(true);
+        Texture texPiedra = assetManager.loadTexture(keyPiedra);
+        texPiedra.setWrap(Texture.WrapMode.Repeat);
+        matPiedra.setTexture("ColorMap", texPiedra);
     }
 
     /** Crea el suelo y lo agrega a la raiz */
@@ -161,6 +172,21 @@ public class DulceHogar extends SimpleApplication
             tmp2.setLocalTranslation(450, y, z);
             rootNode.attachChild(tmp2);
         }
+        
+        //Configura la parte alta del camino que lleva a la cabana
+        Box bloquePasto = new Box(Vector3f.ZERO, 200, 50, 50);
+        bloquePasto.scaleTextureCoordinates(new Vector2f(4, 2));
+        Geometry geomPasto = new Geometry("Parte alta", bloquePasto);
+        geomPasto.setMaterial(matPasto);
+        geomPasto.setLocalTranslation(0, 360, -950);
+        rootNode.attachChild(geomPasto);
+        
+        Box bloqueTierra = new Box(Vector3f.ZERO, 200, 25, 25);
+        bloqueTierra.scaleTextureCoordinates(new Vector2f(2, 10));
+        Geometry geomTierra = new Geometry("Parte alta", bloqueTierra);
+        geomTierra.setMaterial(matTierra);
+        geomTierra.setLocalTranslation(0, 360, -890);
+        rootNode.attachChild(geomTierra);
     }
 
     /** Crea una rampa para llegar a la parte alta de la escena*/
@@ -291,6 +317,69 @@ public class DulceHogar extends SimpleApplication
         rootNode.attachChild(casa);
     }
 
+    /** Crea una especie de puente de piedra para caminar sobre el vacio */
+    private void crearPuente()
+    {
+        // Piso/Base del puente
+        Box suelo = new Box(Vector3f.ZERO, 20, 1, 75);
+        suelo.scaleTextureCoordinates(new Vector2f(12, 4));
+        Geometry piso = new Geometry("Piso del puente", suelo);
+        piso.setMaterial(matPiedra);
+        piso.setLocalTranslation(0, 0, 0);
+        puente.attachChild(piso);
+        
+        // Paredes del puente (Cubre todo el puente)
+        Box pared1 = new Box(Vector3f.ZERO, 2, 4, 75);
+        pared1.scaleTextureCoordinates(new Vector2f(16, 1));
+        Geometry barandal1 = new Geometry("Barandal 1", pared1);
+        barandal1.setMaterial(matPiedra);
+        barandal1.setLocalTranslation(22, 5, 0);
+        puente.attachChild(barandal1);
+        
+        // Pared del puente (Deja una abertura para entroncar con otro)
+        Box pared2 = new Box(Vector3f.ZERO, 2, 4, 60);
+        pared2.scaleTextureCoordinates(new Vector2f(16, 1));
+        Geometry barandal2 = new Geometry("Barandal 2", pared2);
+        barandal2.setMaterial(matPiedra);
+        barandal2.setLocalTranslation(-18, 5, -15);
+        puente.attachChild(barandal2);
+        
+        posicionarPuentes(puente);
+    }
+    
+    /** Posiciona los bloques para construir un puente sobre el vacio*/
+    private void posicionarPuentes(Node puente)
+    {
+        // Salida trasera
+        Node tmp = puente.clone(true);
+        tmp.setLocalTranslation(675, 0, 1075);
+        rootNode.attachChild(tmp);
+        
+        // Parte larga trasera
+        for (int i=1,x=580; i<=10; i++,x-=150) 
+        {
+            Node tmp2= puente.clone(true);
+            tmp2.rotate(0, (float)Math.toRadians(-90), 0);
+            tmp2.setLocalTranslation(x, 0, 1130);
+            rootNode.attachChild(tmp2);
+        }
+        
+        // Parte lateral
+        for (int i=0,z=1035; i<=5; i++,z-=150) 
+        {
+            Node tmp2= puente.clone(true);
+            tmp2.rotate(0, (float)Math.toRadians(-180), 0);
+            tmp2.setLocalTranslation(-825, 0, z);
+            rootNode.attachChild(tmp2);
+        }
+        
+        // Entronque lateral izquierdo
+        Node tmp2 = puente.clone(true);
+        tmp2.rotate(0, (float)Math.toRadians(-270), 0);
+        tmp2.setLocalTranslation(-730, 0, 230);
+        rootNode.attachChild(tmp2);
+    }
+    
     /**
      * Activa la deteccion de colisiones en la escena
      * (Para que los jugadores no atraviesen las paredes, suelo o elementos)
