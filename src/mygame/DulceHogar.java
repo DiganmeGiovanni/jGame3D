@@ -27,6 +27,7 @@ import com.jme3.texture.Texture;
 public class DulceHogar extends SimpleApplication
 {
     private RigidBodyControl rigidBodyControl; //Para deteccion de colisiones
+    private Basura basura;
     
     //Materiales de la escena
     private Material matTierra;
@@ -62,6 +63,7 @@ public class DulceHogar extends SimpleApplication
         viewPort.setBackgroundColor(new ColorRGBA(0f, 0.36f, 0.79f, 0f));
         
         flyCam.setMoveSpeed(300);
+        basura = new Basura(this.getAssetManager());
         initMaterials();
         crearSuelo();
         crearMontanas();
@@ -70,6 +72,7 @@ public class DulceHogar extends SimpleApplication
         crearPuente();
         agregarCasa();
         
+        agregarBasura();
         configurarLuces();
         configurarFisica();
     }
@@ -378,6 +381,28 @@ public class DulceHogar extends SimpleApplication
         tmp2.rotate(0, (float)Math.toRadians(-270), 0);
         tmp2.setLocalTranslation(-730, 0, 230);
         rootNode.attachChild(tmp2);
+    }
+    
+    /**
+     * Agrega cajas/cubos de basura a la escena
+     */
+    private void agregarBasura() 
+    {
+        // En la base del escenario
+        for (int i=1,x=-400; i<=3; i++,x+=400) 
+        {
+            Node tmp = basura.crearCajaBasura();
+            tmp.setLocalTranslation(x, 15, 400);
+            rootNode.attachChild(tmp);
+            
+            Node tmp2 = basura.crearCajaLatas();
+            tmp2.setLocalTranslation(x+100, 30, 600);
+            rootNode.attachChild(tmp2);
+            
+            Node tmp3 = basura.crearCajaBasura();
+            tmp3.setLocalTranslation(x-100, 15, 800);
+            rootNode.attachChild(tmp3);
+        }
     }
     
     /**
