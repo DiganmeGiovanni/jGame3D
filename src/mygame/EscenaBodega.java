@@ -18,6 +18,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Construye el escenario de "Bodega", (una bodega de almacen insdustrial)
@@ -27,8 +29,11 @@ import com.jme3.texture.Texture;
 public class EscenaBodega
 {
     private AssetManager assetManager;        // Administrador de texturas y modelos
-    public Node raiz = new Node();            // Nodo padre de toda la escena
-    public RigidBodyControl rigidBodyControl; // Para deteccion de colisiones
+    public Node raiz = new Node("Bodega");            // Nodo padre de toda la escena
+    
+    // Controles de rigidez solida para los elementos
+    public List<RigidBodyControl> controlesRigidos = new LinkedList();
+    public RigidBodyControl escenaRigidBody;
     
     // Materiales de elementos de escena
     private Material matSuelo;
@@ -140,8 +145,8 @@ public class EscenaBodega
     private void configurarFisica() 
     {
         CollisionShape escenaShape = CollisionShapeFactory.createMeshShape(raiz);
-        rigidBodyControl = new RigidBodyControl(escenaShape, 0);
-        raiz.addControl(rigidBodyControl);
+        escenaRigidBody = new RigidBodyControl(escenaShape, 0);
+        raiz.addControl(escenaRigidBody);
     }
     
     /** Crea el suelo y lo agrega a la escena */
@@ -151,6 +156,11 @@ public class EscenaBodega
         geomSuelo.setMaterial(matSuelo);
         geomSuelo.setLocalTranslation(0, -0.1f, 0);
         raiz.attachChild(geomSuelo);
+        
+        // Configurar fisica del suelo
+//        escenaRigidBody = new RigidBodyControl(0.0f);
+//        geomSuelo.addControl(escenaRigidBody);
+//        controlesRigidos.add(escenaRigidBody);
     }
     
     /** Crea las paredes y las agrega a la escena */

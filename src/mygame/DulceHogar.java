@@ -26,7 +26,8 @@ import com.jme3.texture.Texture;
  */
 public class DulceHogar extends SimpleApplication
 {
-    private RigidBodyControl rigidBodyControl; //Para deteccion de colisiones
+    /** Fisica para deteccion de colisiones en la escena*/
+    private RigidBodyControl rigidBodyControl;
     private Basura basura;
     
     //Materiales de la escena

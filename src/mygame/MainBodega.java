@@ -42,8 +42,9 @@ public class MainBodega extends SimpleApplication implements ActionListener
         // Adjuntamos la escena, el personaje y los espacios fisicos a la raiz
         EscenaBodega bodega = new EscenaBodega(assetManager);
         //bodega.raiz.setLocalScale(0.5f);
+        
         rootNode.attachChild(bodega.raiz);
-        bulletApp.getPhysicsSpace().add(bodega.rigidBodyControl);
+        bulletApp.getPhysicsSpace().add(bodega.escenaRigidBody);
         bulletApp.getPhysicsSpace().add(personajeRigidBody);
     }
     
@@ -57,10 +58,10 @@ public class MainBodega extends SimpleApplication implements ActionListener
     {                                                         // radio  alto   eje
         CapsuleCollisionShape capsula = new CapsuleCollisionShape(10.5f,   26f,   1);
         personajeRigidBody = new CharacterControl(capsula, 0.05f);
-        personajeRigidBody.setJumpSpeed(20);
-        personajeRigidBody.setFallSpeed(30);
-        personajeRigidBody.setGravity(30);
-        personajeRigidBody.setPhysicsLocation(new Vector3f(0, 30, 0));
+        personajeRigidBody.setJumpSpeed(80);
+        personajeRigidBody.setFallSpeed(80);
+        personajeRigidBody.setGravity(9.8f);
+        personajeRigidBody.setPhysicsLocation(new Vector3f(0, 50, 0));
     }
 
     /** Mapeo de keys de navegacion*/
