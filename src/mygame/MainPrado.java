@@ -5,21 +5,31 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
-import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import sun.applet.Main;
 
 /**
  *
@@ -27,51 +37,67 @@ import java.io.File;
  */
 public class MainPrado extends SimpleApplication implements ActionListener {
 
+    
+    Interfaz interfaz;
     static int s = 0;
-    private int vidas = 3, xV1 = 630, xV2 = 670, xV3 = 710;
-    private int score;
+    static int salud=4;
+    static int vidas = 3;
+    static int score;
     private BulletAppState bulletApp;
     private CharacterControl personajeRigidBody;
     private Vector3f walkDirection = new Vector3f();
-    private boolean izq = false, der = false, arriba = false, abajo = false;
-    private BitmapText textScore;
+    private boolean izq = false, der = false, arriba = false, abajo = false;    
+    
 
     public static void main(String[] args) {
-        AppSettings settings = new AppSettings(true);
-        settings.setResolution(800, 600);
-        MainPrado mp = new MainPrado();
-        mp.setSettings(settings);
-        mp.start();
+        MainPrado app = new MainPrado();
+        AppSettings cfg = new AppSettings(true);
+       
+        cfg.setFrameRate(60); // set to less than or equal screen refresh rate
+        cfg.setVSync(true);   // prevents page tearing
+        cfg.setFrequency(60); // set to screen refresh rate
+        cfg.setResolution(1280, 720);
+        cfg.setFullscreen(true);
+        cfg.setSamples(2);    // anti-aliasing
+        cfg.setTitle("My jMonkeyEngine 3 Game"); // branding: window name
+        try {
+            // Branding: window icon
+            cfg.setIcons(new BufferedImage[]{ImageIO.read(new File("assets/Interface/Lifes.png"))});
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Icon missing.", ex);
+        }
+// branding: load splashscreen from assets
+cfg.setSettingsDialogImage("Interface/gameover.png"); 
+//app.setShowSettings(false); // or don't display splashscreen
+
+        app.setSettings(cfg);
+        app.start();
+
     }
 
     @Override
     public void simpleInitApp() {
-        // Configuramos comportamient fisico
+        // Configuramos comportamient fisico        
         this.setDisplayStatView(false);
         this.setDisplayFps(false);
         bulletApp = new BulletAppState();
         stateManager.attach(bulletApp);
         viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
-        flyCam.setMoveSpeed(500);
+        flyCam.setMoveSpeed(500);        
         configurarKeys();
         configurarFisicaPersonaje();
         configurarLuces();
-
-
-
-        segundero();
-//        m.encabezado("Puntuacion:", 100);
-//        m.encabezado("Vidas:", 580);
-        setLife("life1", xV1);
-        setLife("life2", xV2);
-        setLife("life3", xV3);
-        score();
+        
+        //Agregamos la interfaz
+        interfaz= new Interfaz(assetManager, guiNode, guiFont, settings.getWidth(), settings.getHeight());
 
         // Adjuntamos la escena, el personaje y los espacios fisicos a la raiz
+
         EscenaPrado prado = new EscenaPrado(assetManager);
         rootNode.attachChild(prado.raiz);
-        bulletApp.getPhysicsSpace().add(prado.rigidBodyControl);
-        bulletApp.getPhysicsSpace().add(personajeRigidBody);
+
+        getPhysicsSpace().add(prado.rigidBodyControl);
+        getPhysicsSpace().add(personajeRigidBody);
     }
 
     /**
@@ -136,24 +162,21 @@ public class MainPrado extends SimpleApplication implements ActionListener {
 
         Vector3f camDirection = cam.getDirection().clone().multLocal(0.6f);
         Vector3f camLeft = cam.getLeft().clone().multLocal(0.4f);
-        if (s == 20) {
-            vidas = 2;
+        if (s==20) {
+            vidas=2;
+            
         }
-        
         if (s==40) {
-            vidas=1;
+            vidas=1;            
         }
-        
         if (s==60) {
             vidas=0;
         }
-        if (vidas==0) {
-            gameover();
-        }
-        checarVidas();
+        interfaz.checarVidas();
+        
         if (s == 30) {
             score = 20;
-            textScore.setText("" + score);
+            interfaz.textScore.setText("" + score);
         }
 
         walkDirection.set(0, 0, 0);
@@ -169,6 +192,7 @@ public class MainPrado extends SimpleApplication implements ActionListener {
         if (abajo) {
             walkDirection.addLocal(camDirection.negate());
         }
+
 
         personajeRigidBody.setWalkDirection(walkDirection);
         cam.setLocation(personajeRigidBody.getPhysicsLocation());
@@ -186,73 +210,10 @@ public class MainPrado extends SimpleApplication implements ActionListener {
         rootNode.addLight(dl);
     }
 
-    private void setLife(String life, int xl) {
-        Picture pLife = new Picture(life);
-        pLife.setImage(assetManager, "Interface/Lifes.png", true);
-        pLife.setWidth(32);
-        pLife.setHeight(32);
-        pLife.setPosition(xl, 21 * 26);
-        guiNode.attachChild(pLife);
+  
+    private PhysicsSpace getPhysicsSpace() {
+        return bulletApp.getPhysicsSpace();
     }
 
-    private void checarVidas() {
-//        
-        if (vidas == 2) {
-            quitLife("life3");
-
-        } else if (vidas == 1) {
-            quitLife("life2");
-        } else if (vidas == 0) {
-            quitLife("life1");
-        }
-
-    }
-
-    private void quitLife(String name) {
-        guiNode.detachChildNamed(name);
-    }
-
-    public void segundero() {
-        // Display a line of text with a default font
-        guiNode.detachAllChildren();
-        guiFont = assetManager.loadFont("Interface/Battlefield28.fnt");
-        BitmapText text = new BitmapText(guiFont, false);
-        text.setSize(guiFont.getCharSet().getRenderedSize());
-        text.setColor(ColorRGBA.White);
-        HiloSegundos hs = new HiloSegundos(text);
-        hs.start();
-        text.setLocalTranslation(380, 21 * 27, 0);
-        guiNode.attachChild(text);
-
-    }
-
-    public void score() {        
-                
-       
-        Picture pScore = new Picture("HUD score");
-        pScore.setImage(assetManager, "Interface/score.png", true);
-        pScore.setWidth(32);
-        pScore.setHeight(32);
-        pScore.setPosition(100, 21 * 26);
-        guiNode.attachChild(pScore);
-
-        guiFont = assetManager.loadFont("Interface/Battlefield28.fnt");//assetManager.loadFont("Interface/Fonts/Default.fnt");
-        textScore = new BitmapText(guiFont, false);
-        textScore.setSize(guiFont.getCharSet().getRenderedSize());
-        textScore.setColor(ColorRGBA.White);
-        textScore.setText("" + score);
-        textScore.setLocalTranslation(150, 21 * 27, 0);
-        guiNode.attachChild(textScore);
-    }
-
-    private void gameover() {
-        guiNode.detachAllChildren();
-        Picture pOver = new Picture("HUD gameover");
-        pOver.setImage(assetManager, "Interface/gameover.png", true);
-        pOver.setWidth(settings.getWidth() / 2);
-        pOver.setHeight(settings.getHeight() / 2);
-        pOver.setPosition(settings.getWidth() / 4, settings.getHeight() / 4);
-        guiNode.attachChild(pOver);
-    }
-       
+    
 }
