@@ -33,17 +33,18 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     /** Material para las redes disparadas */
     private Material matMalla;
     
-    /** Estado de la aplicacion jBullet */
+    /** Elementos para la configuracion fisica */
+    private RigidBodyControl fisicaMallas;
     private BulletAppState bulletApp;
     
-    /** Nodos para las propiedades fisicas de las mallas disparadas */
-    private RigidBodyControl fisicaMallas;
-    
-    /** Esfera con textura de malla para capturar a las basuras */
+    /** Esfera con textura de malla para capturar las basuras */
     private static final Sphere malla;
     
     /** Indica el que punto fue la colision de loe elementos*/
     Geometry mark;
+    
+    /** Nombre del escenario que se muestra actualmente*/
+    String nomEscena = "";
 
     static
     {
@@ -69,6 +70,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         // Agregamos el escenario
         //EscenaBodega escena = new EscenaBodega(assetManager);
         MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
+        nomEscena = escena.raizPrincipal.getName();
         rootNode.attachChild(escena.raizPrincipal);
         
         // configuramos fisica de la escena
@@ -147,7 +149,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
             rootNode.detachChild(event.getNodeA());
             bulletApp.getPhysicsSpace().remove(event.getNodeA().getControl(0));
                 
-            if (!event.getNodeB().getName().equals("MonkeyLand")) 
+            if (!event.getNodeB().getName().equals(nomEscena)) 
             {
                 // Eliminamos el objeto golpeado (Las cajas de basura por ejemplo)
                 rootNode.detachChild(event.getNodeB());
@@ -165,7 +167,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
             rootNode.detachChild(event.getNodeB());
             bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
             
-            if (!event.getNodeA().getName().equals("MonkeyLand")) 
+            if (!event.getNodeA().getName().equals(nomEscena)) 
             {
                 rootNode.detachChild(event.getNodeA());
                 bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));

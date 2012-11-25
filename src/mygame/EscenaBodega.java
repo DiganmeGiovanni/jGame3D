@@ -29,7 +29,7 @@ import java.util.List;
 public class EscenaBodega
 {
     private AssetManager assetManager;        // Administrador de texturas y modelos
-    public Node raiz = new Node("Bodega");            // Nodo padre de toda la escena
+    public Node raizPrincipal = new Node("Bodega");            // Nodo padre de toda la escena
     
     // Controles de rigidez solida para los elementos
     public List<RigidBodyControl> controlesRigidos = new LinkedList();
@@ -63,7 +63,7 @@ public class EscenaBodega
     }
     
     /**
-     * Construye la escena "Bodega", la escena se adjunta al nodo raiz de la
+     * Construye la escena "Bodega", la escena se adjunta al nodo raizPrincipal de la
      * calse por lo cual accediendo a este se accede a toda la escena
      * 
      * @param assetManager El assetManager que administrara texturas y modelos
@@ -82,7 +82,7 @@ public class EscenaBodega
         crearTecho();
         configurarLuces();
         
-        raiz.setLocalScale(0.5f);
+        raizPrincipal.setLocalScale(0.5f);
         configurarFisica();
     }
     
@@ -144,9 +144,9 @@ public class EscenaBodega
      */
     private void configurarFisica() 
     {
-        CollisionShape escenaShape = CollisionShapeFactory.createMeshShape(raiz);
+        CollisionShape escenaShape = CollisionShapeFactory.createMeshShape(raizPrincipal);
         escenaRigidBody = new RigidBodyControl(escenaShape, 0);
-        raiz.addControl(escenaRigidBody);
+        raizPrincipal.addControl(escenaRigidBody);
     }
     
     /** Crea el suelo y lo agrega a la escena */
@@ -155,7 +155,7 @@ public class EscenaBodega
         Geometry geomSuelo = new Geometry("Suelo", suelo);
         geomSuelo.setMaterial(matSuelo);
         geomSuelo.setLocalTranslation(0, -0.1f, 0);
-        raiz.attachChild(geomSuelo);
+        raizPrincipal.attachChild(geomSuelo);
         
         // Configurar fisica del suelo
 //        escenaRigidBody = new RigidBodyControl(0.0f);
@@ -169,21 +169,21 @@ public class EscenaBodega
         Geometry paredIzq = new Geometry("Pared", pared);
         paredIzq.setMaterial(matPared);
         paredIzq.setLocalTranslation(-1000, 180, 0);
-        raiz.attachChild(paredIzq);
+        raizPrincipal.attachChild(paredIzq);
         
         Geometry paredDer = paredIzq.clone(true);
         paredDer.setLocalTranslation(1000, 150, 0);
-        raiz.attachChild(paredDer);
+        raizPrincipal.attachChild(paredDer);
         
         Geometry paredFondo = paredIzq.clone(true);
         paredFondo.setLocalTranslation(0, 150, -1000);
         paredFondo.rotate(0f,(float) Math.toRadians(90), 0f);
-        raiz.attachChild(paredFondo);
+        raizPrincipal.attachChild(paredFondo);
         
         Geometry paredFrente = paredIzq.clone(true);
         paredFrente.setLocalTranslation(0, 150, 1000);
         paredFrente.rotate(0f,(float) Math.toRadians(90), 0f);
-        raiz.attachChild(paredFrente);
+        raizPrincipal.attachChild(paredFrente);
     }
 
     /** Crea los montones de cajas de la escena*/
@@ -233,15 +233,15 @@ public class EscenaBodega
         Node blokeCajas = pivote.clone(false);
         blokeCajas.setLocalTranslation(450, 0, 450);
         blokeCajas.rotate(0, (float) Math.toRadians(180), 0);
-        raiz.attachChild(pivote);
-        raiz.attachChild(blokeCajas);
+        raizPrincipal.attachChild(pivote);
+        raizPrincipal.attachChild(blokeCajas);
         
         // PARED DEL FRENTE
         for (int i=1, x=-750; i<=3; i++,x+=750) 
         {
             Node tmp = pivote.clone(false);
             tmp.setLocalTranslation(x, 0, 975);
-            raiz.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
         }
         
         // PARED DEL FONDO
@@ -250,7 +250,7 @@ public class EscenaBodega
             Node tmp = pivote.clone(false);
             tmp.setLocalTranslation(x, 0, -975);
             tmp.rotate(0, (float) Math.toRadians(180), 0);
-            raiz.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
         }
         
     }
@@ -288,14 +288,14 @@ public class EscenaBodega
         {
             Node tmp = bloqueContenedores.clone(false);
             tmp.setLocalTranslation(400, 0, z);
-            raiz.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
         }
         
         for (int i=1,z=500; i<=3; i++,z-=200) 
         {
             Node tmp = bloqueContenedores.clone(false);
             tmp.setLocalTranslation(-400, 0, z);
-            raiz.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
         }
     }
 
@@ -338,8 +338,8 @@ public class EscenaBodega
         Node andadorFondo = andador.clone(false);
         andadorFondo.setLocalTranslation(0, 0, 0);
         andadorFondo.rotate(0, (float)Math.toRadians(180), 0);
-        raiz.attachChild(andador);
-        raiz.attachChild(andadorFondo);
+        raizPrincipal.attachChild(andador);
+        raizPrincipal.attachChild(andadorFondo);
     }
 
     /** Configura el techo de la bodega */
@@ -352,13 +352,13 @@ public class EscenaBodega
         techoIzq.setMaterial(matTecho);
         techoIzq.setLocalTranslation(-500, 280, 0);
         techoIzq.rotate(0, 0, (float) Math.toRadians(5));
-        raiz.attachChild(techoIzq);
+        raizPrincipal.attachChild(techoIzq);
         
         Geometry techoDer = new Geometry("Techo derecho", techo);
         techoDer.setMaterial(matTecho);
         techoDer.setLocalTranslation(500, 280, 0);
         techoDer.rotate(0, 0, (float) Math.toRadians(-5));
-        raiz.attachChild(techoDer);
+        raizPrincipal.attachChild(techoDer);
     }
 
     /** Configura las fuentes de luz de la escena*/
@@ -366,12 +366,12 @@ public class EscenaBodega
     {
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(1.3f));
-        raiz.addLight(al);
+        raizPrincipal.addLight(al);
         
         DirectionalLight dl = new DirectionalLight();
         dl.setColor(ColorRGBA.White);
         dl.setDirection(new Vector3f(1f, -1, -1).normalizeLocal());
-        raiz.addLight(dl);
+        raizPrincipal.addLight(dl);
     }
     
 }

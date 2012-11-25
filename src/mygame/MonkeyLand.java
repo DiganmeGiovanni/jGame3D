@@ -31,11 +31,13 @@ public class MonkeyLand
     public  RigidBodyControl escenaRigidBody;
     public  RigidBodyControl basuraRigidBody;
     public  BulletAppState   bulletAppState;
+    
+    /** Elementos utiles para la construccion de la escena */
     private AssetManager assetManager;
     private Node         rootNode;
     private Basura basura;
     
-    //Materiales de la escena
+    // Materiales de la escena
     private Material matTierra;
     private Material matPasto;
     private Material matRoca;

@@ -39,11 +39,11 @@ public class MainBodega extends SimpleApplication implements ActionListener
         configurarKeys();
         configurarFisicaPersonaje();
         
-        // Adjuntamos la escena, el personaje y los espacios fisicos a la raiz
+        // Adjuntamos la escena, el personaje y los espacios fisicos a la raizPrincipal
         EscenaBodega bodega = new EscenaBodega(assetManager);
-        //bodega.raiz.setLocalScale(0.5f);
+        //bodega.raizPrincipal.setLocalScale(0.5f);
         
-        rootNode.attachChild(bodega.raiz);
+        rootNode.attachChild(bodega.raizPrincipal);
         bulletApp.getPhysicsSpace().add(bodega.escenaRigidBody);
         bulletApp.getPhysicsSpace().add(personajeRigidBody);
     }
