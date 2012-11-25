@@ -4,8 +4,9 @@
  */
 package mygame;
 
-import com.jme3.app.SimpleApplication;
+import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -24,10 +25,14 @@ import com.jme3.texture.Texture;
  *
  * @author Aguirre Alvarez J Giovanni
  */
-public class DulceHogar extends SimpleApplication
+public class MonkeyLand
 {
     /** Fisica para deteccion de colisiones en la escena*/
-    private RigidBodyControl rigidBodyControl;
+    public  RigidBodyControl escenaRigidBody;
+    public  RigidBodyControl basuraRigidBody;
+    public  BulletAppState   bulletAppState;
+    private AssetManager assetManager;
+    private Node         rootNode;
     private Basura basura;
     
     //Materiales de la escena
@@ -44,27 +49,24 @@ public class DulceHogar extends SimpleApplication
     private static Node camino  = new Node("Camino");   // Camino para subir a casa
     private static Node barandal= new Node("Barandal"); // Cerca de seguridad
     private static Node puente  = new Node("Puente");   // Puente de roca
+    public  Node  raizPrincipal = new Node("MonkeyLand");
     
     static
     {
         suelo = new Box(Vector3f.ZERO, 700, 0.1f, 1000);
         suelo.scaleTextureCoordinates(new Vector2f(5, 5));
-        
     }
     
-    public static void main(String[] args) 
+    public MonkeyLand(AssetManager assetManager, BulletAppState bulletAppState, Node rootNode) 
     {
-        new DulceHogar().start();
-    }
-    
-    @Override
-    public void simpleInitApp() 
-    {
+        this.assetManager   = assetManager;
+        this.bulletAppState = bulletAppState;
+        this.rootNode       = rootNode;
         // Ponemos azul el cielo
-        viewPort.setBackgroundColor(new ColorRGBA(0f, 0.36f, 0.79f, 0f));
+        //viewPort.setBackgroundColor(new ColorRGBA(0f, 0.36f, 0.79f, 0f));
         
-        flyCam.setMoveSpeed(300);
-        basura = new Basura(this.getAssetManager());
+        //flyCam.setMoveSpeed(300);
+        basura = new Basura(assetManager);
         initMaterials();
         crearSuelo();
         crearMontanas();
@@ -136,7 +138,7 @@ public class DulceHogar extends SimpleApplication
         Geometry geomSuelo = new Geometry("Suelo", suelo);
         geomSuelo.setMaterial(matTierra);
         geomSuelo.setLocalTranslation(0, -1f, 0);
-        rootNode.attachChild(geomSuelo);
+        raizPrincipal.attachChild(geomSuelo);
     }
     
     /** Crea las montanas de la escena */
@@ -169,12 +171,12 @@ public class DulceHogar extends SimpleApplication
             // lado izquierdo
             Node tmp = montana.clone(false);
             tmp.setLocalTranslation(-450, y, z);
-            rootNode.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
             
             // lado derecho
             Node tmp2 = montana.clone(false);
             tmp2.setLocalTranslation(450, y, z);
-            rootNode.attachChild(tmp2);
+            raizPrincipal.attachChild(tmp2);
         }
         
         //Configura la parte alta del camino que lleva a la cabana
@@ -183,14 +185,14 @@ public class DulceHogar extends SimpleApplication
         Geometry geomPasto = new Geometry("Parte alta", bloquePasto);
         geomPasto.setMaterial(matPasto);
         geomPasto.setLocalTranslation(0, 360, -950);
-        rootNode.attachChild(geomPasto);
+        raizPrincipal.attachChild(geomPasto);
         
         Box bloqueTierra = new Box(Vector3f.ZERO, 200, 25, 25);
         bloqueTierra.scaleTextureCoordinates(new Vector2f(2, 10));
         Geometry geomTierra = new Geometry("Parte alta", bloqueTierra);
         geomTierra.setMaterial(matTierra);
         geomTierra.setLocalTranslation(0, 360, -890);
-        rootNode.attachChild(geomTierra);
+        raizPrincipal.attachChild(geomTierra);
     }
 
     /** Crea una rampa para llegar a la parte alta de la escena*/
@@ -225,7 +227,7 @@ public class DulceHogar extends SimpleApplication
         geomCamLat2.move(350, 0, 0);
         camino.attachChild(geomCamLat2);
         
-        rootNode.attachChild(camino);
+        raizPrincipal.attachChild(camino);
     }
 
     /** Crea cercas protectores para los limites del terreno */
@@ -268,12 +270,12 @@ public class DulceHogar extends SimpleApplication
             // Del frente
             Node tmp = barandal.clone(false);
             tmp.move(x, 0, 0);
-            rootNode.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
             
             // Del fondo
             Node tmp2 = barandal.clone(false);
             tmp2.move(x, 410, -1994);
-            rootNode.attachChild(tmp2);
+            raizPrincipal.attachChild(tmp2);
         }
         
         // Laterales parte baja
@@ -283,13 +285,13 @@ public class DulceHogar extends SimpleApplication
             Node tmp = barandal.clone(false);
             tmp.move(200f, 0, z);
             tmp.rotate(0, (float)Math.toRadians(-90), 0);
-            rootNode.attachChild(tmp);
+            raizPrincipal.attachChild(tmp);
             
             // Lado izquierdo
             Node tmp2 = barandal.clone(false);
             tmp2.move(1594f, 0, z);
             tmp2.rotate(0, (float)Math.toRadians(-90), 0);
-            rootNode.attachChild(tmp2);
+            raizPrincipal.attachChild(tmp2);
         }
         
         // Laterales de las montanas
@@ -300,12 +302,12 @@ public class DulceHogar extends SimpleApplication
                 Node tmp = barandal.clone(false);
                 tmp.setLocalTranslation(-497, y, z);
                 tmp.rotate(0, (float)Math.toRadians(-90), 0);
-                rootNode.attachChild(tmp);
+                raizPrincipal.attachChild(tmp);
 
                 Node tmp2 = barandal.clone(false);
                 tmp2.setLocalTranslation(897, y, z);
                 tmp2.rotate(0, (float)Math.toRadians(-90), 0);
-                rootNode.attachChild(tmp2);
+                raizPrincipal.attachChild(tmp2);
             }
             
         }
@@ -318,7 +320,7 @@ public class DulceHogar extends SimpleApplication
         casa.scale(0.5f);
         casa.setLocalTranslation(600, 365, -850);
         casa.rotate(0, (float)Math.toRadians(-90), 0);
-        rootNode.attachChild(casa);
+        raizPrincipal.attachChild(casa);
     }
 
     /** Crea una especie de puente de piedra para caminar sobre el vacio */
@@ -357,7 +359,7 @@ public class DulceHogar extends SimpleApplication
         // Salida trasera
         Node tmp = puente.clone(true);
         tmp.setLocalTranslation(675, 0, 1075);
-        rootNode.attachChild(tmp);
+        raizPrincipal.attachChild(tmp);
         
         // Parte larga trasera
         for (int i=1,x=580; i<=10; i++,x-=150) 
@@ -365,7 +367,7 @@ public class DulceHogar extends SimpleApplication
             Node tmp2= puente.clone(true);
             tmp2.rotate(0, (float)Math.toRadians(-90), 0);
             tmp2.setLocalTranslation(x, 0, 1130);
-            rootNode.attachChild(tmp2);
+            raizPrincipal.attachChild(tmp2);
         }
         
         // Parte lateral
@@ -374,14 +376,14 @@ public class DulceHogar extends SimpleApplication
             Node tmp2= puente.clone(true);
             tmp2.rotate(0, (float)Math.toRadians(-180), 0);
             tmp2.setLocalTranslation(-825, 0, z);
-            rootNode.attachChild(tmp2);
+            raizPrincipal.attachChild(tmp2);
         }
         
         // Entronque lateral izquierdo
         Node tmp2 = puente.clone(true);
         tmp2.rotate(0, (float)Math.toRadians(-270), 0);
         tmp2.setLocalTranslation(-730, 0, 230);
-        rootNode.attachChild(tmp2);
+        raizPrincipal.attachChild(tmp2);
     }
     
     /**
@@ -395,15 +397,26 @@ public class DulceHogar extends SimpleApplication
             Node tmp = basura.crearCajaBasura();
             tmp.setLocalTranslation(x, 15, 400);
             rootNode.attachChild(tmp);
+            configFisicaBasura(tmp);
             
             Node tmp2 = basura.crearCajaLatas();
             tmp2.setLocalTranslation(x+100, 30, 600);
             rootNode.attachChild(tmp2);
+            configFisicaBasura(tmp2);
             
             Node tmp3 = basura.crearCajaBasura();
             tmp3.setLocalTranslation(x-100, 15, 800);
             rootNode.attachChild(tmp3);
+            configFisicaBasura(tmp3);
         }
+    }
+    
+    /** Agrega configuracion fisica a la basura*/
+    private void configFisicaBasura(Node tmp)
+    {
+        basuraRigidBody = new RigidBodyControl(0);
+        tmp.addControl(basuraRigidBody);
+        bulletAppState.getPhysicsSpace().add(basuraRigidBody);
     }
     
     /**
@@ -412,9 +425,9 @@ public class DulceHogar extends SimpleApplication
      */
     private void configurarFisica() 
     {
-        CollisionShape escenaShape = CollisionShapeFactory.createMeshShape(rootNode);
-        rigidBodyControl = new RigidBodyControl(escenaShape, 0);
-        rootNode.addControl(rigidBodyControl);
+        CollisionShape escenaShape = CollisionShapeFactory.createMeshShape(raizPrincipal);
+        escenaRigidBody = new RigidBodyControl(escenaShape, 0);
+        raizPrincipal.addControl(escenaRigidBody);
     }
     
     /** Configura las fuentes de luz de la escena*/
@@ -422,12 +435,12 @@ public class DulceHogar extends SimpleApplication
     {
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.Gray.mult(1.3f));
-        rootNode.addLight(al);
+        raizPrincipal.addLight(al);
         
         DirectionalLight dl = new DirectionalLight();
         dl.setColor(ColorRGBA.LightGray);
         dl.setDirection(new Vector3f(1f, -1, -1).normalizeLocal());
-        rootNode.addLight(dl);
+        raizPrincipal.addLight(dl);
     }
 
 }

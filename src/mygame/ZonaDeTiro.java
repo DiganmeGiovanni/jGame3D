@@ -67,11 +67,12 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         agregarListenerDisparo();
         
         // Agregamos el escenario
-        EscenaBodega bodega = new EscenaBodega(assetManager);
-        rootNode.attachChild(bodega.raiz);
+        //EscenaBodega escena = new EscenaBodega(assetManager);
+        MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
+        rootNode.attachChild(escena.raizPrincipal);
         
         // configuramos fisica de la escena
-        bulletApp.getPhysicsSpace().add(bodega.escenaRigidBody);
+        bulletApp.getPhysicsSpace().add(escena.escenaRigidBody);
         bulletApp.getPhysicsSpace().addCollisionListener(this);
     }
     
@@ -141,20 +142,39 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     public void collision(PhysicsCollisionEvent event) 
     {
         if (event.getNodeA().getName().equals("Bala de captura")) 
-        {
+        {   
+            // Eliminamos la malla de captura de la escena
             rootNode.detachChild(event.getNodeA());
-            bulletApp.getPhysicsSpace().remove(fisicaMallas);
-            mark.setLocalTranslation(event.getLocalPointB());
-            rootNode.attachChild(mark);
-            //System.out.println("Colision A sobre: " + event.getNodeB().getName());
+            bulletApp.getPhysicsSpace().remove(event.getNodeA().getControl(0));
+                
+            if (!event.getNodeB().getName().equals("MonkeyLand")) 
+            {
+                // Eliminamos el objeto golpeado (Las cajas de basura por ejemplo)
+                rootNode.detachChild(event.getNodeB());
+                bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
+                
+                // Mostramos el efecto de la colision
+                mark.setLocalTranslation(event.getLocalPointB());
+                rootNode.attachChild(mark);
+                System.out.println("Colision A sobre: " + event.getNodeB().getName());
+            }
         } 
         else if(event.getNodeB().getName().equals("Bala de captura"))
         {
+            // Eliminamos la malla de captura de la escena
             rootNode.detachChild(event.getNodeB());
-            bulletApp.getPhysicsSpace().remove(fisicaMallas);
-            mark.setLocalTranslation(event.getLocalPointA());
-            rootNode.attachChild(mark);
-            //System.out.println("Colision B");
+            bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
+            
+            if (!event.getNodeA().getName().equals("MonkeyLand")) 
+            {
+                rootNode.detachChild(event.getNodeA());
+                bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
+                
+                // Mostramos el efecto de la explosion
+                mark.setLocalTranslation(event.getLocalPointA());
+                rootNode.attachChild(mark);
+                System.out.println("Colision B sobre: " + event.getNodeA().getName());
+            }
         }
     }
     
