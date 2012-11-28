@@ -9,6 +9,7 @@ import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
@@ -16,7 +17,9 @@ import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Texture;
 
@@ -26,43 +29,43 @@ import com.jme3.texture.Texture;
  */
 public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionListener
 {
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         new ZonaDeTiro().start();
     }
     
-    /** Material para las redes disparadas */
-    private Material matMalla;
-    
     /** Elementos para la configuracion fisica */
-    private RigidBodyControl fisicaMallas;
     private BulletAppState bulletApp;
-    
-    /** Esfera con textura de malla para capturar las basuras */
-    private static final Sphere malla;
+    private RigidBodyControl fisicaEcoBalls;
+    private CharacterControl fisicaPersonaje;
+    private Vector3f walkDirection = new Vector3f();
     
     /** Indica el que punto fue la colision de loe elementos*/
     Geometry mark;
     
+    /** Creamos el personaje a partir de su modelo */
+    Spatial personaje = assetManager.loadModel("Models/untitled.j3o");
+    
     /** Nombre del escenario que se muestra actualmente*/
     String nomEscena = "";
-
-    static
-    {
-        malla = new Sphere(32, 32, 7f, true, false);
-        malla.scaleTextureCoordinates(new Vector2f(1, 1));
-    }
     
+    Interfaz interfaz;
+
     @Override
     public void simpleInitApp() 
     {
         initMark();
+        /** Inicializamos los recursos graficos para que puedan ser usados */
+        new RecursosGraficos(assetManager);
         
         /** Configuramos la fisica del juego */
         bulletApp = new BulletAppState();
         stateManager.attach(bulletApp);
         
-        initMaterials();
-        flyCam.setMoveSpeed(50);
+        flyCam.setMoveSpeed(200);
+        
+        //Agregamos la interfaz
+        interfaz= new Interfaz(assetManager, guiNode, guiFont, settings.getWidth(), settings.getHeight());
         
         // Configuramos el listener para el disparo
         agregarListenerDisparo();
@@ -73,19 +76,21 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         nomEscena = escena.raizPrincipal.getName();
         rootNode.attachChild(escena.raizPrincipal);
         
+        ubicarPersonaje();
+        
         // configuramos fisica de la escena
         bulletApp.getPhysicsSpace().add(escena.escenaRigidBody);
         bulletApp.getPhysicsSpace().addCollisionListener(this);
     }
     
-    public void initMaterials()
+    /** Configura la posicion inicial del personaje de acuerdo a la escena actual */
+    private void ubicarPersonaje()
     {
-        // Material para las mallas de captura
-        matMalla = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        TextureKey keyMalla = new TextureKey("Textures/mallaGris.jpg");
-        keyMalla.setGenerateMips(true);
-        Texture texMalla = assetManager.loadTexture(keyMalla);
-        matMalla.setTexture("ColorMap", texMalla);
+        if (nomEscena.equals("MonkeyLand")) 
+        {
+            personaje.setLocalTranslation(675, 10, 985);
+        }
+        rootNode.attachChild(personaje);
     }
 
     /** Agrega un keyListener para el evento de disparar una malla de captura */
@@ -96,7 +101,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
             {
                 if (name.equals("Disparo") && !isPressed) 
                 {
-                    crearMallaCapturadora();
+                    dispararEcoBall();
                 }
             }
         };
@@ -121,23 +126,22 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
      * Crea una malla de captura para la basura, es una esfera la cual es
      * acelarada y vuela en direccion de la camara
      */
-    public void crearMallaCapturadora()
+    public void dispararEcoBall()
     {
-        /** Creamos la esfera y la agregamos a la escena */
-        Geometry mallaCaptura = new Geometry("Bala de captura", malla);
-        mallaCaptura.setMaterial(matMalla);
-        rootNode.attachChild(mallaCaptura);
+        /** Creamos la ecoBall y la agregamos a la escena */
+        Geometry ecoBall = RecursosGraficos.crearEcoBall();
+        rootNode.attachChild(ecoBall);
         
         // La movemos a la posicion de la camara
-        mallaCaptura.setLocalTranslation(cam.getLocation());
+        ecoBall.setLocalTranslation(cam.getLocation());
         
-        // Configuramos la fisica de las mallas
-        fisicaMallas = new RigidBodyControl(1);
-        mallaCaptura.addControl(fisicaMallas);
-        bulletApp.getPhysicsSpace().add(fisicaMallas);
+        // Configuramos la fisica de la ecoBall
+        fisicaEcoBalls = new RigidBodyControl(1);
+        ecoBall.addControl(fisicaEcoBalls);
+        bulletApp.getPhysicsSpace().add(fisicaEcoBalls);
         
         // Aplicamos aceleracion de disparo
-        fisicaMallas.setLinearVelocity(cam.getDirection().mult(500));
+        fisicaEcoBalls.setLinearVelocity(cam.getDirection().mult(500));
     }
     
     /** Contrla los eventos que ocurren cuando se detecta una colision */

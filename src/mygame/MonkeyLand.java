@@ -35,7 +35,6 @@ public class MonkeyLand
     /** Elementos utiles para la construccion de la escena */
     private AssetManager assetManager;
     private Node         rootNode;
-    private Basura basura;
     
     // Materiales de la escena
     private Material matTierra;
@@ -68,7 +67,6 @@ public class MonkeyLand
         //viewPort.setBackgroundColor(new ColorRGBA(0f, 0.36f, 0.79f, 0f));
         
         //flyCam.setMoveSpeed(300);
-        basura = new Basura(assetManager);
         initMaterials();
         crearSuelo();
         crearMontanas();
@@ -86,52 +84,52 @@ public class MonkeyLand
     private void initMaterials()
     {
         // SUELO    
-        matTierra = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matTierra = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         TextureKey keySuelo = new TextureKey("Textures/DulceHogar/tierra.jpg");
         keySuelo.setGenerateMips(true);
         Texture texSuelo = assetManager.loadTexture(keySuelo);
         texSuelo.setWrap(Texture.WrapMode.Repeat);
-        matTierra.setTexture("ColorMap", texSuelo);
+        matTierra.setTexture("DiffuseMap", texSuelo);
         
         // ROCA
-        matRoca = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matRoca = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         TextureKey keyRoca = new TextureKey("Textures/DulceHogar/arena.jpg");
         keyRoca.setGenerateMips(true);
         Texture texRoca = assetManager.loadTexture(keyRoca);
         texRoca.setWrap(Texture.WrapMode.Repeat);
-        matRoca.setTexture("ColorMap", texRoca);
+        matRoca.setTexture("DiffuseMap", texRoca);
         
         // PASTO
-        matPasto = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matPasto = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         TextureKey keyPasto = new TextureKey("Textures/DulceHogar/pasto.jpg");
         keyPasto.setGenerateMips(true);
         Texture texPasto = assetManager.loadTexture(keyPasto);
         texPasto.setWrap(Texture.WrapMode.Repeat);
-        matPasto.setTexture("ColorMap", texPasto);
+        matPasto.setTexture("DiffuseMap", texPasto);
         
         // CAMINO
-        matCamino = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matCamino = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         TextureKey keyCamino = new TextureKey("Textures/pisoMarmol.jpg");
         keyCamino.setGenerateMips(true);
         Texture texCamino = assetManager.loadTexture(keyCamino);
         texCamino.setWrap(Texture.WrapMode.Repeat);
-        matCamino.setTexture("ColorMap", texCamino);
+        matCamino.setTexture("DiffuseMap", texCamino);
         
         // MADERA VIEJA
-        matMadera = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matMadera = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         TextureKey keyMadera = new TextureKey("Textures/maderaVieja.jpg");
         keyMadera.setGenerateMips(true);
         Texture texMadera = assetManager.loadTexture(keyMadera);
         texMadera.setWrap(Texture.WrapMode.Repeat);
-        matMadera.setTexture("ColorMap", texMadera);
+        matMadera.setTexture("DiffuseMap", texMadera);
         
         // PARED DE PIEDRA
-        matPiedra = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        matPiedra = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         TextureKey keyPiedra = new TextureKey("Textures/paredPiedra.jpg");
         keyPiedra.setGenerateMips(true);
         Texture texPiedra = assetManager.loadTexture(keyPiedra);
         texPiedra.setWrap(Texture.WrapMode.Repeat);
-        matPiedra.setTexture("ColorMap", texPiedra);
+        matPiedra.setTexture("DiffuseMap", texPiedra);
     }
 
     /** Crea el suelo y lo agrega a la raiz */
@@ -396,17 +394,17 @@ public class MonkeyLand
         // En la base del escenario
         for (int i=1,x=-400; i<=3; i++,x+=400) 
         {
-            Node tmp = basura.crearCajaBasura();
+            Node tmp = RecursosGraficos.crearCajaBasura();
             tmp.setLocalTranslation(x, 15, 400);
             rootNode.attachChild(tmp);
             configFisicaBasura(tmp);
             
-            Node tmp2 = basura.crearCajaLatas();
+            Node tmp2 = RecursosGraficos.crearCajaLatas();
             tmp2.setLocalTranslation(x+100, 30, 600);
             rootNode.attachChild(tmp2);
             configFisicaBasura(tmp2);
             
-            Node tmp3 = basura.crearCajaBasura();
+            Node tmp3 = RecursosGraficos.crearCajaBasura();
             tmp3.setLocalTranslation(x-100, 15, 800);
             rootNode.attachChild(tmp3);
             configFisicaBasura(tmp3);
@@ -440,9 +438,20 @@ public class MonkeyLand
         raizPrincipal.addLight(al);
         
         DirectionalLight dl = new DirectionalLight();
-        dl.setColor(ColorRGBA.LightGray);
-        dl.setDirection(new Vector3f(1f, -1, -1).normalizeLocal());
+        dl.setColor(ColorRGBA.White);
+        dl.setDirection(new Vector3f(0f, -50, -100).normalizeLocal());
         raizPrincipal.addLight(dl);
+        
+        DirectionalLight dl2 = new DirectionalLight();
+        dl2.setColor(ColorRGBA.White);
+        dl2.setDirection(new Vector3f(-700f, -100, 0).normalizeLocal());
+        raizPrincipal.addLight(dl2);
+        
+        DirectionalLight dl3 = new DirectionalLight();
+        dl3.setColor(ColorRGBA.White);
+        dl3.setDirection(new Vector3f(700f, -100, 0).normalizeLocal());
+        raizPrincipal.addLight(dl3);
+        
     }
 
 }
