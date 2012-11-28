@@ -163,14 +163,14 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         Vector3f camDirection = cam.getDirection().clone().multLocal(0.6f);
         Vector3f camLeft = cam.getLeft().clone().multLocal(0.4f);
         if (s==20) {
-            vidas=2;
+            salud=3;
             
         }
         if (s==40) {
-            vidas=1;            
+            salud=2;            
         }
         if (s==60) {
-            vidas=0;
+            salud=1;
         }
         interfaz.checarVidas();
         

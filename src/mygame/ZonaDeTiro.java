@@ -68,8 +68,8 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         agregarListenerDisparo();
         
         // Agregamos el escenario
-        //EscenaBodega escena = new EscenaBodega(assetManager);
-        MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
+        EscenaBodega escena = new EscenaBodega(assetManager);
+//        MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
         nomEscena = escena.raizPrincipal.getName();
         rootNode.attachChild(escena.raizPrincipal);
         

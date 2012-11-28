@@ -16,24 +16,24 @@ import com.jme3.ui.Picture;
  * @author Eddy
  */
 public class Interfaz {
-   
+
     AssetManager assetManager;
     Node guiNode;
     BitmapFont guiFont;
     BitmapText textScore, textLife;
     int width;
-    int height;                           
-    private float yIcon, yText, xText_score,xIcon_score, xText_life, xTime, xBar_life, yBar_life;
-    
-    public Interfaz(AssetManager assetManager, Node guiNode, BitmapFont guiFont,int width, int height){
-        this.assetManager=assetManager;
-        this.guiNode=guiNode;
-        this.guiFont=guiFont;
-        this.width=width;
-        this.height=height;        
+    int height;
+    private float yIcon, yText, xText_score, xIcon_score, xText_life, xTime, xBar_life, yBar_life;
+
+    public Interfaz(AssetManager assetManager, Node guiNode, BitmapFont guiFont, int width, int height) {
+        this.assetManager = assetManager;
+        this.guiNode = guiNode;
+        this.guiFont = guiFont;
+        this.width = width;
+        this.height = height;
         resolution();
         segundero();
-        setLife("life1");        
+        setLife("life1");
         score();
     }
 
@@ -44,39 +44,43 @@ public class Interfaz {
         pLife.setHeight(91);
         pLife.setPosition(xBar_life, yBar_life);
         guiNode.attachChild(pLife);
-        
+
         guiFont = assetManager.loadFont("Interface/Fonts/Appleberry50.fnt");//assetManager.loadFont("Interface/Fonts/Default.fnt");
         textLife = new BitmapText(guiFont, false);
         textLife.setSize(guiFont.getCharSet().getRenderedSize());
-        textLife.setColor(new ColorRGBA(.101f,0.549f,1f,1f));
+        textLife.setColor(new ColorRGBA(.101f, 0.549f, 1f, 1f));
         textLife.setText("" + MainPrado.vidas);
         textLife.setLocalTranslation(xText_life, yText, 0);
         guiNode.attachChild(textLife);
     }
 
     public void checarVidas() {
-//        
-        if (MainPrado.vidas==2) {
-            quitLife("life1", "life2", "Interface/life_bar/life_bar_orange.png");
-        }else{
-            if (MainPrado.vidas==1) {
-                quitLife("life2", "life3", "Interface/life_bar/life_bar_red.png");
-            }else{
-                if (MainPrado.vidas==0) {
-                    quitLife("life3", "life4","Interface/life_bar/life_bar_die.png" );
-                    gameover();
+//       
+        if (MainPrado.salud == 4) {
+            quitLife("life1", "Interface/life_bar/life_bar_full.png");
+        } else {
+            if (MainPrado.salud == 3) {
+                quitLife("life1", "Interface/life_bar/life_bar_orange.png");
+            } else {
+                if (MainPrado.salud == 2) {
+                    quitLife("life1", "Interface/life_bar/life_bar_red.png");
+                } else {
+                    if (MainPrado.salud == 1) {
+                        quitLife("life1", "Interface/life_bar/life_bar_die.png");
+                        MainPrado.salud = 4;                                                
+                        textLife.setText("" + (MainPrado.vidas-1));
+                    }
                 }
             }
         }
-        textLife.setText(""+MainPrado.vidas);
     }
 
-    private void quitLife(String name1, String name2, String url) {
+    private void quitLife(String name1, String url) {
         guiNode.detachChildNamed(name1);
-        setLife(name2, url);                
+        setLife(name1, url);
     }
-    
-    private void setLife(String name, String url){
+
+    private void setLife(String name, String url) {
         Picture pLife = new Picture(name);
         pLife.setImage(assetManager, url, true);
         pLife.setWidth(283);
@@ -86,10 +90,10 @@ public class Interfaz {
     }
 
     public void segundero() {
-        
-        ColorRGBA color= new ColorRGBA();
+
+        ColorRGBA color = new ColorRGBA();
         color.set(0.4f, 0.2f, 0, 1f);
-        
+
         // Display a line of text with a default font
         guiNode.detachAllChildren();
         guiFont = assetManager.loadFont("Interface/Fonts/Appleberry60.fnt");
@@ -116,7 +120,7 @@ public class Interfaz {
         guiFont = assetManager.loadFont("Interface/Fonts/Appleberry60.fnt");//assetManager.loadFont("Interface/Fonts/Default.fnt");
         textScore = new BitmapText(guiFont, false);
         textScore.setSize(guiFont.getCharSet().getRenderedSize());
-        textScore.setColor(new ColorRGBA(0.03921f,0.7490f,0.03921f,1f));
+        textScore.setColor(new ColorRGBA(0.03921f, 0.7490f, 0.03921f, 1f));
         textScore.setText("" + MainPrado.score);
         textScore.setLocalTranslation(xText_score, yText, 0);
         guiNode.attachChild(textScore);
@@ -135,23 +139,20 @@ public class Interfaz {
     private void resolution() {
 
         if (width == 800 && height == 600) {
-            
         } else {
             if (width == 1024 && height == 768) {
-                
             } else {
                 if (width == 1152 && height == 864) {
-                    
                 } else {
                     if (width == 1280 && height == 720) {
-                        yIcon=630;
-                        yText=680;
-                        xText_score=1070;
-                        xIcon_score=1000;
-                        xText_life=107;
-                        xTime=600;
-                        xBar_life=70;
-                        yBar_life=610;
+                        yIcon = 630;
+                        yText = 680;
+                        xText_score = 1070;
+                        xIcon_score = 1000;
+                        xText_life = 107;
+                        xTime = 600;
+                        xBar_life = 70;
+                        yBar_life = 610;
                     }
                 }
             }
