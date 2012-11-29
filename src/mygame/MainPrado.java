@@ -6,11 +6,13 @@ package mygame;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.audio.Environment;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.font.BitmapText;
+import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
@@ -20,6 +22,8 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.jme3.ui.Picture;
@@ -37,12 +41,14 @@ import sun.applet.Main;
  */
 public class MainPrado extends SimpleApplication implements ActionListener {
 
-    
+    AudioNode chimenea;
     Interfaz interfaz;
     static int s = 0;
     static int salud=4;
     static int vidas = 3;
     static int score;
+    private Node personaje;
+    private ChaseCamera chaseCam;
     private BulletAppState bulletApp;
     private CharacterControl personajeRigidBody;
     private Vector3f walkDirection = new Vector3f();
@@ -86,6 +92,7 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         flyCam.setMoveSpeed(500);        
         configurarKeys();
         configurarFisicaPersonaje();
+        thirdPerson();
         configurarLuces();
         
         //Agregamos la interfaz
@@ -94,8 +101,9 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         // Adjuntamos la escena, el personaje y los espacios fisicos a la raiz
 
         EscenaPrado prado = new EscenaPrado(assetManager);
+//        Audio.playChimenea(assetManager);
         rootNode.attachChild(prado.raiz);
-
+        setAudio();
         getPhysicsSpace().add(prado.rigidBodyControl);
         getPhysicsSpace().add(personajeRigidBody);
     }
@@ -108,10 +116,18 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
     private void configurarFisicaPersonaje() {                                                         // radio  alto   eje
         CapsuleCollisionShape capsula = new CapsuleCollisionShape(1.5f, 6f, 1);
         personajeRigidBody = new CharacterControl(capsula, 0.05f);
+        personaje= (Node)assetManager.loadModel("/Models/robo.j3o");
+        personaje.addControl(personajeRigidBody);        
         personajeRigidBody.setJumpSpeed(20);
         personajeRigidBody.setFallSpeed(30);
-        personajeRigidBody.setGravity(30);
+        personajeRigidBody.setGravity(40);
         personajeRigidBody.setPhysicsLocation(new Vector3f(0, 10, 0));
+        rootNode.attachChild(personaje);
+    }
+    
+    private void thirdPerson() {
+        flyCam.setEnabled(false);
+        chaseCam = new ChaseCamera(cam, personaje, inputManager);
     }
 
     /**
@@ -162,15 +178,17 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
 
         Vector3f camDirection = cam.getDirection().clone().multLocal(0.6f);
         Vector3f camLeft = cam.getLeft().clone().multLocal(0.4f);
+        camDirection.y = 0;
+        camLeft.y = 0;
         if (s==20) {
-            vidas=2;
+            salud=3;
             
         }
         if (s==40) {
-            vidas=1;            
+            salud=2;            
         }
         if (s==60) {
-            vidas=0;
+            salud=1;
         }
         interfaz.checarVidas();
         
@@ -192,10 +210,11 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         if (abajo) {
             walkDirection.addLocal(camDirection.negate());
         }
-
+        personajeRigidBody.setViewDirection(walkDirection);
 
         personajeRigidBody.setWalkDirection(walkDirection);
-        cam.setLocation(personajeRigidBody.getPhysicsLocation());
+        listener.setLocation(personajeRigidBody.getPhysicsLocation());
+        listener.setRotation(cam.getRotation()); 
     }
 
     private void configurarLuces() {
@@ -214,6 +233,23 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
     private PhysicsSpace getPhysicsSpace() {
         return bulletApp.getPhysicsSpace();
     }
+    
+    public void setAudio(){
+        chimenea= new AudioNode(assetManager, "/Sounds/effects/chimenea.wav");
+        Environment hall= new Environment( new float[]{ 17, 100f, 0.270f, -1000, -2500, 0, 1.49f, 0.21f, 1f, -2780, 0.300f, 0f, 0f, 0f, -1434, 0.100f, 0f, 0f, 0f, 0.250f, 1f, 0.250f, 0f, -5f, 5000f, 250f, 0f, 0x1f}  );       
+        audioRenderer.setEnvironment(hall);
+        audioRenderer.setListener(listener);
+        chimenea.setPositional(true);
+        chimenea.setMaxDistance(10f);
+        chimenea.setRefDistance(5f);
+        chimenea.setReverbEnabled(true);
+        chimenea.setLocalTranslation(0, 122, 135);
+        rootNode.attachChild(chimenea);
+        
+//        chimenea.play();
+        
+    }
+    
 
     
 }
