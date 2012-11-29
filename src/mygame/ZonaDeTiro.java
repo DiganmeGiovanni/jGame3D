@@ -57,6 +57,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     String nomEscena = "";
     
     Interfaz interfaz;
+    private ChaseCamera chaseCam;
 
     @Override
     public void simpleInitApp() 
@@ -71,16 +72,16 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         new RecursosGraficos(assetManager);
         cargarEscena();
         configurarPersonaje();
-        
-        flyCam.setEnabled(false);
-        cam3Persona = new ChaseCamera(cam, personaje, inputManager);
-        cam3Persona.setDragToRotate(true);
-        cam3Persona.setDefaultVerticalRotation((float)Math.toRadians(15));
-        cam3Persona.setSmoothMotion(true);
-        cam3Persona.setTrailingEnabled(false);
-        cam3Persona.setChasingSensitivity(15);
-        cam3Persona.setMaxDistance(500);
-        cam3Persona.setDefaultDistance(20);
+        thirdPerson();
+//        flyCam.setEnabled(false);
+//        cam3Persona = new ChaseCamera(cam, personaje, inputManager);
+//        cam3Persona.setDragToRotate(true);
+//        cam3Persona.setDefaultVerticalRotation((float)Math.toRadians(15));
+//        cam3Persona.setSmoothMotion(true);
+//        cam3Persona.setTrailingEnabled(false);
+//        cam3Persona.setChasingSensitivity(15);
+//        cam3Persona.setMaxDistance(500);
+//        cam3Persona.setDefaultDistance(20);
         
         
         //Agregamos la interfaz
@@ -114,11 +115,11 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         CapsuleCollisionShape capsula = new CapsuleCollisionShape(3, 4);
         fisicaPersonaje = new CharacterControl(capsula, 0.5f);
         fisicaPersonaje.setJumpSpeed(0);
-        fisicaPersonaje.setFallSpeed(0);
+        fisicaPersonaje.setFallSpeed(20);
         fisicaPersonaje.setGravity(0);
         
         // Cargamos el personaje y agregamos controles fisicos
-        personaje = assetManager.loadModel("Models/untitled.j3o");
+        personaje = assetManager.loadModel("Models/robo.j3o");
         //personaje.rotate(0, (float)Math.toRadians(180), 0);
         personaje.addControl(fisicaPersonaje);
         bulletApp.getPhysicsSpace().add(fisicaPersonaje);
@@ -127,11 +128,14 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         if (nomEscena.equals("MonkeyLand")) 
         {
             fisicaPersonaje.setPhysicsLocation(new Vector3f(675, 5, 985));
-            fisicaPersonaje.setViewDirection(cam.getLeft());
+//            fisicaPersonaje.setViewDirection(cam.getLeft());
         }
         rootNode.attachChild(personaje);
     }
-    
+    private void thirdPerson() {
+        flyCam.setEnabled(false);
+        chaseCam = new ChaseCamera(cam, personaje, inputManager);
+    }
     /** Configura los listeners para movimiento del personaje y disparo*/
     private void configurarKeys()
     {
@@ -139,9 +143,9 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         inputManager.addMapping("Derecha", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Adelante", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Atras", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Saltar", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addMapping("Saltar", new KeyTrigger(KeyInput.KEY_J));
         inputManager.addMapping("Salir", new KeyTrigger(KeyInput.KEY_ESCAPE));
-        inputManager.addMapping("Disparo", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        inputManager.addMapping("Disparo", new KeyTrigger(KeyInput.KEY_SPACE));
         
         inputManager.addListener(this, "Disparo");
         inputManager.addListener(this, "Izquierda");
@@ -270,7 +274,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         if (atras) {
             walkDirection.addLocal(camDir.negate());
         }
-        
+        fisicaPersonaje.setViewDirection(walkDirection);
         fisicaPersonaje.setWalkDirection(walkDirection);
         //cam.setLocation(personaje.getLocalTranslation().clone().addLocal(0, 0, 15));
     }
