@@ -26,7 +26,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
+import com.jme3.system.JmeCanvasContext;
 import com.jme3.ui.Picture;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -55,30 +57,52 @@ public class MainPrado extends SimpleApplication implements ActionListener {
     private boolean izq = false, der = false, arriba = false, abajo = false;    
     
 
+//    public static void main(String[] args) {
+//        MainPrado app = new MainPrado();
+//        AppSettings cfg = new AppSettings(true);
+//       
+//        cfg.setFrameRate(60); // set to less than or equal screen refresh rate
+//        cfg.setVSync(true);   // prevents page tearing
+//        cfg.setFrequency(60); // set to screen refresh rate
+//        cfg.setResolution(1280, 720);
+//        cfg.setFullscreen(true);
+//        cfg.setSamples(2);    // anti-aliasing
+//        cfg.setTitle("My jMonkeyEngine 3 Game"); // branding: window name
+//        try {
+//            // Branding: window icon
+//            cfg.setIcons(new BufferedImage[]{ImageIO.read(new File("assets/Interface/Lifes.png"))});
+//        } catch (IOException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Icon missing.", ex);
+//        }
+//// branding: load splashscreen from assets
+//cfg.setSettingsDialogImage("Interface/gameover.png"); 
+////app.setShowSettings(false); // or don't display splashscreen
+//
+//        app.setSettings(cfg);
+//        app.start();
+//
+//    }
     public static void main(String[] args) {
-        MainPrado app = new MainPrado();
-        AppSettings cfg = new AppSettings(true);
-       
-        cfg.setFrameRate(60); // set to less than or equal screen refresh rate
-        cfg.setVSync(true);   // prevents page tearing
-        cfg.setFrequency(60); // set to screen refresh rate
-        cfg.setResolution(1280, 720);
-        cfg.setFullscreen(true);
-        cfg.setSamples(2);    // anti-aliasing
-        cfg.setTitle("My jMonkeyEngine 3 Game"); // branding: window name
-        try {
-            // Branding: window icon
-            cfg.setIcons(new BufferedImage[]{ImageIO.read(new File("assets/Interface/Lifes.png"))});
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, "Icon missing.", ex);
-        }
-// branding: load splashscreen from assets
-cfg.setSettingsDialogImage("Interface/gameover.png"); 
-//app.setShowSettings(false); // or don't display splashscreen
+        java.awt.EventQueue.invokeLater(new Runnable() {
 
-        app.setSettings(cfg);
-        app.start();
-
+            public void run() {
+                AppSettings settings = new AppSettings(true);
+                settings.setWidth(1280);
+                settings.setHeight(720);
+                settings.setFullscreen(true);
+                MainPrado canvasApplication = new MainPrado();
+                canvasApplication.setSettings(settings);
+                canvasApplication.createCanvas();
+                final JmeCanvasContext ctx = (JmeCanvasContext) canvasApplication.getContext();
+                ctx.setSystemListener(canvasApplication);
+                Dimension dim = new Dimension(1280, 720);
+                ctx.getCanvas().setPreferredSize(dim);
+                Start st= new Start("Juego", ctx);
+                st.pack();
+                st.setVisible(true);
+                canvasApplication.startCanvas();
+            }
+        });
     }
 
     @Override
@@ -138,15 +162,13 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         inputManager.addMapping("Derecha", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Arriba", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Abajo", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Saltar", new KeyTrigger(KeyInput.KEY_SPACE));
-        inputManager.addMapping("Salir", new KeyTrigger(KeyInput.KEY_ESCAPE));
-
+        inputManager.addMapping("Saltar", new KeyTrigger(KeyInput.KEY_SPACE));        
         inputManager.addListener(this, "Izquierda");
         inputManager.addListener(this, "Derecha");
         inputManager.addListener(this, "Arriba");
         inputManager.addListener(this, "Abajo");
         inputManager.addListener(this, "Saltar");
-        inputManager.addListener(this, "Salir");
+        
     }
 
     /**
@@ -163,9 +185,9 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
             abajo = isPressed;
         } else if (name.equals("Saltar")) {
             personajeRigidBody.jump();
-        } else if (name.equals("Salir")) {
-            System.exit(0);
-        }
+        }  
+            
+        
     }
 
     /**
@@ -218,14 +240,18 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
     }
 
     private void configurarLuces() {
-        // Agregamos luces para poder ver la escena
+//         Agregamos luces para poder ver la escena
         AmbientLight al = new AmbientLight();
         al.setColor(ColorRGBA.White.mult(1.3f));
         rootNode.addLight(al);
-
+//
+//        DirectionalLight dl = new DirectionalLight();
+//        dl.setColor(ColorRGBA.White);
+//        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        Vector3f direction = new Vector3f(-0.1f, -0.7f, -1).normalizeLocal();
         DirectionalLight dl = new DirectionalLight();
-        dl.setColor(ColorRGBA.White);
-        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        dl.setDirection(direction);
+        dl.setColor(new ColorRGBA(1f, 1f, 1f, 1.0f));
         rootNode.addLight(dl);
     }
 
