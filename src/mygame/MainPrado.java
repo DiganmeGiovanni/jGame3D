@@ -92,7 +92,7 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         flyCam.setMoveSpeed(500);        
         configurarKeys();
         configurarFisicaPersonaje();
-        setupChaseCamera();
+        thirdPerson();
         configurarLuces();
         
         //Agregamos la interfaz
@@ -125,7 +125,7 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         rootNode.attachChild(personaje);
     }
     
-    private void setupChaseCamera() {
+    private void thirdPerson() {
         flyCam.setEnabled(false);
         chaseCam = new ChaseCamera(cam, personaje, inputManager);
     }
