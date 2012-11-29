@@ -43,6 +43,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     private CharacterControl fisicaPersonaje;
     private Vector3f walkDirection = new Vector3f();
     private boolean adelante=false, atras=false, izquierda=false, derecha=false;
+    private boolean girarDer=false, girarIzq=false;
     
     /** Camara que se mueve detras del personaje */
     private ChaseCamera cam3Persona;
@@ -78,9 +79,9 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         cam3Persona.setDefaultVerticalRotation((float)Math.toRadians(15));
         cam3Persona.setSmoothMotion(true);
         cam3Persona.setTrailingEnabled(false);
-        cam3Persona.setChasingSensitivity(15);
+        cam3Persona.setChasingSensitivity(17);
         cam3Persona.setMaxDistance(500);
-        cam3Persona.setDefaultDistance(20);
+        cam3Persona.setDefaultDistance(30);
         
         
         //Agregamos la interfaz
@@ -138,17 +139,21 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         inputManager.addMapping("Derecha", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Adelante", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Atras", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("GirarDerecha", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("GirarIzquierda", new KeyTrigger(KeyInput.KEY_LEFT));
         inputManager.addMapping("Saltar", new KeyTrigger(KeyInput.KEY_SPACE));
         inputManager.addMapping("Salir", new KeyTrigger(KeyInput.KEY_ESCAPE));
         inputManager.addMapping("Disparo", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
         
-        inputManager.addListener(this, "Disparo");
         inputManager.addListener(this, "Izquierda");
         inputManager.addListener(this, "Derecha");
         inputManager.addListener(this, "Adelante");
         inputManager.addListener(this, "Atras");
+        inputManager.addListener(this, "GirarDerecha");
+        inputManager.addListener(this, "GirarIzquierda");
         inputManager.addListener(this, "Saltar");
         inputManager.addListener(this, "Salir");
+        inputManager.addListener(this, "Disparo");
     }
     
     /** Definimos las acciones desencadenadas por las teclas presionadas */
@@ -161,6 +166,10 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
             adelante = isPressed;
         } else if (name.equals("Atras")) {
             atras = isPressed;
+        } else if (name.equals("GirarDerecha")) {
+            girarDer = isPressed;
+        } else if (name.equals("GirarIzquierda")) {
+            girarIzq = isPressed;
         } else if (name.equals("Saltar")) {
             //personajeRigidBody.jump();
         } else if (name.equals("Disparo") && !isPressed) {
@@ -250,8 +259,8 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     @Override
     public void simpleUpdate(float tpf)
     {
-        Vector3f camDir = cam.getDirection().clone().multLocal(0.5f);
-        Vector3f camLeft= cam.getLeft().clone().multLocal(0.5f);
+        Vector3f camDir = cam.getDirection().clone().multLocal(2f);
+        Vector3f camLeft= cam.getLeft().clone().multLocal(2f);
         
         camDir.y = 0f;
         camLeft.y= 0f;
@@ -268,6 +277,16 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         }
         if (atras) {
             walkDirection.addLocal(camDir.negate());
+        }
+        if (girarDer) {
+            cam3Persona.setDefaultHorizontalRotation
+                    (cam3Persona.getHorizontalRotation() + (float)Math.toRadians(2));
+            fisicaPersonaje.setViewDirection(camDir);
+        }
+        if (girarIzq) {
+            cam3Persona.setDefaultHorizontalRotation
+                    (cam3Persona.getHorizontalRotation() + (float)Math.toRadians(-2));
+            fisicaPersonaje.setViewDirection(camDir);
         }
         
         fisicaPersonaje.setWalkDirection(walkDirection);
