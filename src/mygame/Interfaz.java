@@ -125,6 +125,10 @@ public class Interfaz {
         textScore.setLocalTranslation(xText_score, yText, 0);
         guiNode.attachChild(textScore);
     }
+    
+    public void checarScore(){
+        textScore.setText(""+MainPrado.score);
+    }
 
     private void gameover() {
 //        guiNode.detachAllChildren();
