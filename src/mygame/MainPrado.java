@@ -6,6 +6,7 @@ package mygame;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
+import com.jme3.audio.Environment;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
@@ -37,7 +38,7 @@ import sun.applet.Main;
  */
 public class MainPrado extends SimpleApplication implements ActionListener {
 
-    
+    AudioNode chimenea;
     Interfaz interfaz;
     static int s = 0;
     static int salud=4;
@@ -94,8 +95,9 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
         // Adjuntamos la escena, el personaje y los espacios fisicos a la raiz
 
         EscenaPrado prado = new EscenaPrado(assetManager);
+//        Audio.playChimenea(assetManager);
         rootNode.attachChild(prado.raiz);
-
+        setAudio();
         getPhysicsSpace().add(prado.rigidBodyControl);
         getPhysicsSpace().add(personajeRigidBody);
     }
@@ -162,6 +164,7 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
 
         Vector3f camDirection = cam.getDirection().clone().multLocal(0.6f);
         Vector3f camLeft = cam.getLeft().clone().multLocal(0.4f);
+       
         if (s==20) {
             salud=3;
             
@@ -196,6 +199,8 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
 
         personajeRigidBody.setWalkDirection(walkDirection);
         cam.setLocation(personajeRigidBody.getPhysicsLocation());
+        listener.setLocation(personajeRigidBody.getPhysicsLocation());
+        listener.setRotation(cam.getRotation()); 
     }
 
     private void configurarLuces() {
@@ -214,6 +219,23 @@ cfg.setSettingsDialogImage("Interface/gameover.png");
     private PhysicsSpace getPhysicsSpace() {
         return bulletApp.getPhysicsSpace();
     }
+    
+    public void setAudio(){
+        chimenea= new AudioNode(assetManager, "/Sounds/effects/chimenea.wav");
+        Environment hall= new Environment( new float[]{ 17, 100f, 0.270f, -1000, -2500, 0, 1.49f, 0.21f, 1f, -2780, 0.300f, 0f, 0f, 0f, -1434, 0.100f, 0f, 0f, 0f, 0.250f, 1f, 0.250f, 0f, -5f, 5000f, 250f, 0f, 0x1f}  );       
+        audioRenderer.setEnvironment(hall);
+        audioRenderer.setListener(listener);
+        chimenea.setPositional(true);
+        chimenea.setMaxDistance(10f);
+        chimenea.setRefDistance(5f);
+        chimenea.setReverbEnabled(true);
+        chimenea.setLocalTranslation(0, 122, 135);
+        rootNode.attachChild(chimenea);
+        
+////        chimenea.play();
+        
+    }
+    
 
     
 }

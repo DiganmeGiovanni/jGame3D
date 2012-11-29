@@ -5,9 +5,11 @@
 package mygame;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -33,7 +35,7 @@ public class EscenaPrado {
         setPinosRandom(100, false);
         setTreesRandom(100, true);
         setTreesRandom(100, false);
-        
+//        setAudio();
         setPhisycs();
     }
     
@@ -43,6 +45,7 @@ public class EscenaPrado {
         escena.setLocalTranslation(0f, -10f, 0f);
         raiz.attachChild(escena);
     }
+    
     
     private void setPinosRandom(int n, boolean a) {
         float x, z;

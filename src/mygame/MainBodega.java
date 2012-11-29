@@ -5,6 +5,8 @@
 package mygame;
 
 import com.jme3.app.SimpleApplication;
+import com.jme3.audio.AudioNode;
+import com.jme3.audio.Environment;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
@@ -37,15 +39,17 @@ public class MainBodega extends SimpleApplication implements ActionListener
         
         flyCam.setMoveSpeed(500);
         configurarKeys();
-        configurarFisicaPersonaje();
+//        configurarFisicaPersonaje();
         
         // Adjuntamos la escena, el personaje y los espacios fisicos a la raizPrincipal
-        EscenaBodega bodega = new EscenaBodega(assetManager);
+//        EscenaBodega bodega = new EscenaBodega(assetManager);
+           MonkeyLand bodega = new MonkeyLand(assetManager, bulletApp, rootNode);
         //bodega.raizPrincipal.setLocalScale(0.5f);
-        
+//        Audio.playChimenea(assetManager);
+//           setAudio();
         rootNode.attachChild(bodega.raizPrincipal);
         bulletApp.getPhysicsSpace().add(bodega.escenaRigidBody);
-        bulletApp.getPhysicsSpace().add(personajeRigidBody);
+//        bulletApp.getPhysicsSpace().add(personajeRigidBody);
     }
     
     /**
@@ -116,15 +120,18 @@ public class MainBodega extends SimpleApplication implements ActionListener
     {
         Vector3f camDirection = cam.getDirection().clone().multLocal(0.6f);
         Vector3f camLeft      = cam.getLeft().clone().multLocal(0.4f);
-        
+        listener.setLocation(cam.getLocation());
+        listener.setRotation(cam.getRotation());
         walkDirection.set(0, 0, 0);
         if (izq)    { walkDirection.addLocal(camLeft);               }
         if (der)    { walkDirection.addLocal(camLeft.negate());      }
         if (arriba) { walkDirection.addLocal(camDirection);          }
         if (abajo)  { walkDirection.addLocal(camDirection.negate()); }
         
-        personajeRigidBody.setWalkDirection(walkDirection);
-        cam.setLocation(personajeRigidBody.getPhysicsLocation());
+//        personajeRigidBody.setWalkDirection(walkDirection);
+//        cam.setLocation(personajeRigidBody.getPhysicsLocation());
     }
+    
+    
     
 }

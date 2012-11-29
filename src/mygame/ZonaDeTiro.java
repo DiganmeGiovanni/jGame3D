@@ -9,6 +9,7 @@ import com.jme3.asset.TextureKey;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.MouseInput;
@@ -44,7 +45,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     Geometry mark;
     
     /** Creamos el personaje a partir de su modelo */
-    Spatial personaje = assetManager.loadModel("Models/untitled.j3o");
+    Spatial personaje;
     
     /** Nombre del escenario que se muestra actualmente*/
     String nomEscena = "";
@@ -58,6 +59,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         /** Inicializamos los recursos graficos para que puedan ser usados */
         new RecursosGraficos(assetManager);
         
+        personaje=assetManager.loadModel("/Models/robo.j3o");
         /** Configuramos la fisica del juego */
         bulletApp = new BulletAppState();
         stateManager.attach(bulletApp);
@@ -71,8 +73,8 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         agregarListenerDisparo();
         
         // Agregamos el escenario
-        EscenaBodega escena = new EscenaBodega(assetManager);
-//        MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
+      //  EscenaBodega escena = new EscenaBodega(assetManager);
+        MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
         nomEscena = escena.raizPrincipal.getName();
         rootNode.attachChild(escena.raizPrincipal);
         
@@ -80,6 +82,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         
         // configuramos fisica de la escena
         bulletApp.getPhysicsSpace().add(escena.escenaRigidBody);
+//         bulletApp.getPhysicsSpace().add(fisicaPersonaje);
         bulletApp.getPhysicsSpace().addCollisionListener(this);
     }
     
@@ -93,6 +96,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         rootNode.attachChild(personaje);
     }
 
+    
     /** Agrega un keyListener para el evento de disparar una malla de captura */
     private void agregarListenerDisparo() 
     {
@@ -102,6 +106,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
                 if (name.equals("Disparo") && !isPressed) 
                 {
                     dispararEcoBall();
+                    Audio.playShot(assetManager).playInstance();
                 }
             }
         };
