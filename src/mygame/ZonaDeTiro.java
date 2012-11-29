@@ -9,16 +9,12 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -49,6 +45,7 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     private ChaseCamera cam3Persona;
     
     /** Indica el que punto fue la colision de loe elementos*/
+    EfectoExplosion explosion;
     Geometry mark;
     
     /** Creamos el personaje a partir de su modelo */
@@ -58,7 +55,6 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     String nomEscena = "";
     
     Interfaz interfaz;
-    private ChaseCamera chaseCam;
 
     @Override
     public void simpleInitApp() 
@@ -91,7 +87,9 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         // Configuramos el listener para el disparo
         //agregarListenerDisparo();
         configurarKeys();
-        
+        explosion = new EfectoExplosion(assetManager, renderManager);
+        explosion.explosion.setLocalTranslation(personaje.getLocalTranslation());
+        rootNode.attachChild(explosion.explosion);
     }
     
     /** Carga y configura la fisica del escenario*/
@@ -115,13 +113,12 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         // Configuramos comportamiento fisico del personaje
         CapsuleCollisionShape capsula = new CapsuleCollisionShape(3, 4);
         fisicaPersonaje = new CharacterControl(capsula, 0.5f);
-        fisicaPersonaje.setJumpSpeed(0);
-        fisicaPersonaje.setFallSpeed(20);
-        fisicaPersonaje.setGravity(0);
+        fisicaPersonaje.setJumpSpeed(120);
+        fisicaPersonaje.setFallSpeed(100);
+        fisicaPersonaje.setGravity(150);
         
         // Cargamos el personaje y agregamos controles fisicos
         personaje = assetManager.loadModel("Models/robo.j3o");
-        //personaje.rotate(0, (float)Math.toRadians(180), 0);
         personaje.addControl(fisicaPersonaje);
         bulletApp.getPhysicsSpace().add(fisicaPersonaje);
         
@@ -129,13 +126,14 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         if (nomEscena.equals("MonkeyLand")) 
         {
             fisicaPersonaje.setPhysicsLocation(new Vector3f(675, 5, 985));
-//            fisicaPersonaje.setViewDirection(cam.getLeft());
+            fisicaPersonaje.setViewDirection(cam.getLeft());
         }
         rootNode.attachChild(personaje);
     }
+    
     private void thirdPerson() {
         flyCam.setEnabled(false);
-        chaseCam = new ChaseCamera(cam, personaje, inputManager);
+        cam3Persona = new ChaseCamera(cam, personaje, inputManager);
     }
     /** Configura los listeners para movimiento del personaje y disparo*/
     private void configurarKeys()
@@ -144,6 +142,8 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         inputManager.addMapping("Derecha", new KeyTrigger(KeyInput.KEY_D));
         inputManager.addMapping("Adelante", new KeyTrigger(KeyInput.KEY_W));
         inputManager.addMapping("Atras", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("GirarDerecha", new KeyTrigger(KeyInput.KEY_RIGHT));
+        inputManager.addMapping("GirarIzquierda", new KeyTrigger(KeyInput.KEY_LEFT));
         inputManager.addMapping("Saltar", new KeyTrigger(KeyInput.KEY_J));
         inputManager.addMapping("Salir", new KeyTrigger(KeyInput.KEY_ESCAPE));
         inputManager.addMapping("Disparo", new KeyTrigger(KeyInput.KEY_SPACE));
@@ -174,12 +174,18 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         } else if (name.equals("GirarIzquierda")) {
             girarIzq = isPressed;
         } else if (name.equals("Saltar")) {
-            //personajeRigidBody.jump();
+            fisicaPersonaje.jump();
         } else if (name.equals("Disparo") && !isPressed) {
             dispararEcoBall();
         } else if (name.equals("Salir")) {
             System.exit(0);
-        } 
+        }
+        if (!isPressed) 
+        {
+            Vector3f camDir = cam.getDirection().clone();
+            camDir.y = 0;
+            fisicaPersonaje.setViewDirection(camDir);
+        }
     }
     
     /**
@@ -200,26 +206,82 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
      */
     public void dispararEcoBall()
     {
-        /** Creamos la ecoBall y la agregamos a la escena */
-        Geometry ecoBall = RecursosGraficos.crearEcoBall();
-        rootNode.attachChild(ecoBall);
+        if (!adelante && !atras) // Solo dispara si no avanza o atrasa
+        {
+            /** Creamos la ecoBall y la agregamos a la escena */
+            Geometry ecoBall = RecursosGraficos.crearEcoBall();
+
+            // La movemos a la posicion de la camara
+            posicionarEcoBall(ecoBall);
+            //ecoBall.setLocalTranslation(personaje.getLocalTranslation());
+            rootNode.attachChild(ecoBall);
+            // Configuramos la fisica de la ecoBall
+            fisicaEcoBalls = new RigidBodyControl(1);
+            ecoBall.addControl(fisicaEcoBalls);
+            bulletApp.getPhysicsSpace().add(fisicaEcoBalls);
+
+            // Aplicamos aceleracion de disparo
+            Vector3f camDir = cam.getDirection().clone();
+            camDir.y = 0;
+            fisicaEcoBalls.setLinearVelocity(camDir.mult(800));
+        }
+    }
+    
+    /** 
+     *  Posiciona la ecoBall de acuerdo a la direccion en que mira le personaje
+     *  siempre la posicionara delante del pecho del robot
+     */
+    private void posicionarEcoBall(Geometry ecoBall)
+    {
+        Vector3f tmp = fisicaPersonaje.getViewDirection();
+        Vector3f pos = personaje.getLocalTranslation().clone();
+        float dist=8, alt=5; // Distancia entre el personaje y la ecoBall
         
-        // La movemos a la posicion de la camara
-        ecoBall.setLocalTranslation(cam.getLocation());
-        
-        // Configuramos la fisica de la ecoBall
-        fisicaEcoBalls = new RigidBodyControl(1);
-        ecoBall.addControl(fisicaEcoBalls);
-        bulletApp.getPhysicsSpace().add(fisicaEcoBalls);
-        
-        // Aplicamos aceleracion de disparo
-        fisicaEcoBalls.setLinearVelocity(cam.getDirection().mult(500));
+        if (tmp.x < 0 && tmp.z == 0) 
+        {
+            pos.x-=dist;
+            pos.y+=alt;
+            ecoBall.setLocalTranslation(pos);
+        }
+        if (tmp.x == 0 && tmp.z < 0) {
+            pos.z-=dist;
+            pos.y+=alt;
+        }
+        else if(tmp.x < 0 && tmp.z < 0)
+        {
+            pos.x-=dist;
+            pos.z-=dist;
+            pos.y+=alt;
+            ecoBall.setLocalTranslation(pos);
+        }
+        else if(tmp.x > 0 && tmp.z < 0)
+        {
+            pos.x+=dist;
+            pos.z-=dist;
+            pos.y+=alt;
+            ecoBall.setLocalTranslation(pos);
+        }
+        else if(tmp.x > 0 && tmp.z > 0)
+        {
+            pos.x+=dist;
+            pos.z+=dist;
+            pos.y+=alt;
+            ecoBall.setLocalTranslation(pos);
+        }
+        else if(tmp.x < 0 && tmp.z > 0)
+        {
+            pos.x-=dist;
+            pos.z+=dist;
+            pos.y+=alt;
+            ecoBall.setLocalTranslation(pos);
+        }
     }
     
     /** Contrla los eventos que ocurren cuando se detecta una colision */
     public void collision(PhysicsCollisionEvent event) 
     {
-        if (event.getNodeA().getName().equals("Bala de captura")) 
+        if (event.getNodeA().getName().equals("Bala de captura")
+                && !event.getNodeB().getName().equals("Textures/untitled.blend")) 
         {   
             // Eliminamos la malla de captura de la escena
             rootNode.detachChild(event.getNodeA());
@@ -238,7 +300,8 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
                 System.out.println("Colision A sobre: " + event.getNodeB().getName());
             }
         } 
-        else if(event.getNodeB().getName().equals("Bala de captura"))
+        else if(event.getNodeB().getName().equals("Bala de captura")
+                && !event.getNodeA().getName().equals("Textures/untitled.blend"))
         {
             // Eliminamos la malla de captura de la escena
             rootNode.detachChild(event.getNodeB());
@@ -271,18 +334,33 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         
         if (izquierda) {
             walkDirection.addLocal(camLeft);
+            fisicaPersonaje.setViewDirection(walkDirection);
         }
         if (derecha) {
             walkDirection.addLocal(camLeft.negate());
+            fisicaPersonaje.setViewDirection(walkDirection);
         }
         if (adelante) {
             walkDirection.addLocal(camDir);
+            fisicaPersonaje.setViewDirection(walkDirection);
         }
         if (atras) {
             walkDirection.addLocal(camDir.negate());
+            fisicaPersonaje.setViewDirection(walkDirection);
         }
-        fisicaPersonaje.setViewDirection(walkDirection);
+        if (girarDer) {
+            cam3Persona.setDefaultHorizontalRotation
+                    (cam3Persona.getHorizontalRotation() + (float)Math.toRadians(2));
+            fisicaPersonaje.setViewDirection(camDir);
+        }
+        if (girarIzq) {
+            cam3Persona.setDefaultHorizontalRotation
+                    (cam3Persona.getHorizontalRotation() + (float)Math.toRadians(-2));
+            fisicaPersonaje.setViewDirection(camDir);
+        }
+        
         fisicaPersonaje.setWalkDirection(walkDirection);
         //cam.setLocation(personaje.getLocalTranslation().clone().addLocal(0, 0, 15));
+        explosion.actualizar(tpf, speed);
     }
 }

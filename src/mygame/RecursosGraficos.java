@@ -36,7 +36,7 @@ public class RecursosGraficos
     private static Material matMalla;
     
     /** ecoBall, esfera para capturar desechos */
-    private static final Sphere ecoBallSphere = new Sphere(32, 32, 7f, true, false);
+    private static final Sphere ecoBallSphere = new Sphere(32, 32, 5f, true, false);
     
     public RecursosGraficos(AssetManager assetManager)
     {

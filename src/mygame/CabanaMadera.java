@@ -28,6 +28,7 @@ public class CabanaMadera {
 
     private static Node nodoRaiz = new Node("Casa");     // Casa, Hogar, Cabaña
     private AssetManager assetManager;
+    
     // Materiales para el modelo
     private Material matPisoMadera;
     private Material matParedMadera;
