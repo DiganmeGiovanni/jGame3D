@@ -49,25 +49,25 @@ public class Interfaz {
         textLife = new BitmapText(guiFont, false);
         textLife.setSize(guiFont.getCharSet().getRenderedSize());
         textLife.setColor(new ColorRGBA(.101f, 0.549f, 1f, 1f));
-        textLife.setText("" + MainPrado.vidas);
+        textLife.setText("" + ZonaDeTiro.vidas);
         textLife.setLocalTranslation(xText_life, yText, 0);
         guiNode.attachChild(textLife);
     }
 
     public void checarVidas() {
 //       
-        if (MainPrado.salud == 4) {
+        if (ZonaDeTiro.salud == 4) {
             quitLife("life1", "Interface/life_bar/life_bar_full.png");
         } else {
-            if (MainPrado.salud == 3) {
+            if (ZonaDeTiro.salud == 3) {
                 quitLife("life1", "Interface/life_bar/life_bar_orange.png");
             } else {
-                if (MainPrado.salud == 2) {
+                if (ZonaDeTiro.salud == 2) {
                     quitLife("life1", "Interface/life_bar/life_bar_red.png");
                 } else {
-                    if (MainPrado.salud == 1) {
+                    if (ZonaDeTiro.salud == 1) {
                         quitLife("life1", "Interface/life_bar/life_bar_die.png");
-                        MainPrado.salud = 4;                                                
+                        ZonaDeTiro.salud = 4;                                                
                         textLife.setText("" + (MainPrado.vidas-1));
                     }
                 }
@@ -121,13 +121,13 @@ public class Interfaz {
         textScore = new BitmapText(guiFont, false);
         textScore.setSize(guiFont.getCharSet().getRenderedSize());
         textScore.setColor(new ColorRGBA(0.03921f, 0.7490f, 0.03921f, 1f));
-        textScore.setText("" + MainPrado.score);
+        textScore.setText("" + ZonaDeTiro.score);
         textScore.setLocalTranslation(xText_score, yText, 0);
         guiNode.attachChild(textScore);
     }
     
     public void checarScore(){
-        textScore.setText(""+MainPrado.score);
+        textScore.setText(""+ZonaDeTiro.score);
     }
 
     private void gameover() {
