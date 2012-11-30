@@ -232,6 +232,7 @@ public class MainPrado extends SimpleApplication implements ActionListener {
         if (abajo) {
             walkDirection.addLocal(camDirection.negate());
         }
+        
         personajeRigidBody.setViewDirection(walkDirection);
 
         personajeRigidBody.setWalkDirection(walkDirection);
