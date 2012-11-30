@@ -78,7 +78,7 @@ public class RecursosGraficos
      */
     public static Node crearCajaBasura()
     {
-        Node raiz = new Node("Cajas de basura");
+        Node raiz = new Node("Basura");
         
         Box box = new Box(Vector3f.ZERO, 15, 15, 15);
         box.scaleTextureCoordinates(new Vector2f(1, 1));
@@ -97,7 +97,7 @@ public class RecursosGraficos
      */
     public static Node crearCajaLatas()
     {
-        Node raiz = new Node("Cajas de latas");
+        Node raiz = new Node("Basura");
         
         Box box = new Box(Vector3f.ZERO, 30, 30, 40);
         box.scaleTextureCoordinates(new Vector2f(1, 1));

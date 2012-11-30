@@ -75,35 +75,20 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         cargarEscena();
         configurarPersonaje();
         thirdPerson();
-//        flyCam.setEnabled(false);
-//        cam3Persona = new ChaseCamera(cam, personaje, inputManager);
-//        cam3Persona.setDragToRotate(true);
-//        cam3Persona.setDefaultVerticalRotation((float)Math.toRadians(15));
-//        cam3Persona.setSmoothMotion(true);
-//        cam3Persona.setTrailingEnabled(false);
-//        cam3Persona.setChasingSensitivity(15);
-//        cam3Persona.setMaxDistance(500);
-//        cam3Persona.setDefaultDistance(20);
-        
         
         //Agregamos la interfaz
         interfaz= new Interfaz(assetManager, guiNode, guiFont, settings.getWidth(), settings.getHeight());
-        
-        // Configuramos el listener para el disparo
-        //agregarListenerDisparo();
+        viewPort.setBackgroundColor(new ColorRGBA(0.7f, 0.8f, 1f, 1f));
         configurarKeys();
-//        explosion = new EfectoExplosion(assetManager, renderManager);
-//        explosion.explosion.setLocalTranslation(personaje.getLocalTranslation());
-//        rootNode.attachChild(explosion.explosion);
-        encenderMotorPersonaje();
+        //encenderMotorPersonaje();
     }
     
     /** Carga y configura la fisica del escenario*/
     private void cargarEscena()
     {
         // Agregamos el escenario
-        EscenaBodega escena = new EscenaBodega(assetManager);
-        //MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
+        //EscenaBodega escena = new EscenaBodega(assetManager, bulletApp);
+        MonkeyLand escena = new MonkeyLand(assetManager, bulletApp, rootNode);
         nomEscena = escena.raizPrincipal.getName();
         rootNode.attachChild(escena.raizPrincipal);
         
@@ -141,7 +126,15 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     private void thirdPerson() {
         flyCam.setEnabled(false);
         cam3Persona = new ChaseCamera(cam, personaje, inputManager);
+//        cam3Persona.setDragToRotate(true);
+//        cam3Persona.setDefaultVerticalRotation((float)Math.toRadians(15));
+//        cam3Persona.setSmoothMotion(true);
+//        cam3Persona.setTrailingEnabled(false);
+//        cam3Persona.setChasingSensitivity(15);
+//        cam3Persona.setMaxDistance(500);
+//        cam3Persona.setDefaultDistance(20);
     }
+    
     /** Configura los listeners para movimiento del personaje y disparo*/
     private void configurarKeys()
     {
@@ -315,39 +308,31 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
     /** Contrla los eventos que ocurren cuando se detecta una colision */
     public void collision(PhysicsCollisionEvent event) 
     {
-        if (event.getNodeA().getName().equals("Bala de captura")
-                && !event.getNodeB().getName().equals("Textures/untitled.blend")) 
+        //AdministradorDeColisiones.colision(nomEscena, rootNode, bulletApp, event, score);
+        if (event.getNodeA().getName().equals("Bala de captura"))
         {   
             // Eliminamos la malla de captura de la escena
             rootNode.detachChild(event.getNodeA());
             bulletApp.getPhysicsSpace().remove(event.getNodeA().getControl(0));
                 
-            if (!event.getNodeB().getName().equals(nomEscena)
-                    && !event.getNodeB().getName().equals("Textures/untitled.blend")) 
+            if (event.getNodeB().getName().equals("Basura"))
             {
-                // Eliminamos el objeto golpeado (Las cajas de basura por ejemplo)
                 rootNode.detachChild(event.getNodeB());
                 bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
                 score++;
-                // Mostramos el efecto de la colision
-                System.out.println("Colision A sobre: " + event.getNodeB().getName());
             }
         } 
-        else if(event.getNodeB().getName().equals("Bala de captura")
-                && !event.getNodeA().getName().equals("Textures/untitled.blend"))
+        else if(event.getNodeB().getName().equals("Bala de captura"))
         {
             // Eliminamos la malla de captura de la escena
             rootNode.detachChild(event.getNodeB());
             bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
             
-            if (!event.getNodeA().getName().equals(nomEscena)
-                && !event.getNodeA().getName().equals("Textures/untitled.blend")) 
+            if (event.getNodeA().getName().equals("Basura"))
             {
                 rootNode.detachChild(event.getNodeA());
                 bulletApp.getPhysicsSpace().remove(event.getNodeB().getControl(0));
                 score++;
-                // Mostramos el efecto de la explosion
-                System.out.println("Colision B sobre: " + event.getNodeA().getName());
             }
         }
     }
@@ -399,14 +384,29 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         }
         
         fisicaPersonaje.setWalkDirection(walkDirection);
-        posicionarFlama();
+        //posicionarFlama();
         interfaz.checarScore();
         interfaz.checarVidas();
-        if (!fisicaPersonaje.onGround()) 
-        {
-            System.out.println("En vacio ==================");
-        }
+        checarAltitud();
     }
+    
+    /** Revisa la altitud en caso de que el personaje haya caido al vacio */
+    private void checarAltitud()
+    {
+        if (fisicaPersonaje.getPhysicsLocation().y < -200) {
+            salud=1;;
+            interfaz.checarVidas();
+            vidas--;
+            // Colocamos al personaje en la escena
+            if (nomEscena.equals("MonkeyLand")) {
+                fisicaPersonaje.setPhysicsLocation(new Vector3f(675, 5, 985));
+                fisicaPersonaje.setViewDirection(cam.getLeft());
+            } else if(nomEscena.equals("Bodega")) {
+                fisicaPersonaje.setPhysicsLocation(new Vector3f(0, 10, 0));
+                fisicaPersonaje.setViewDirection(cam.getLeft());
+            }
+        }
+    }   
 
     /** Ubica la flama del robot justo debajo de el cada vez que este se mueva*/
     private void posicionarFlama() {
