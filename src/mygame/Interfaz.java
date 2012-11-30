@@ -68,7 +68,7 @@ public class Interfaz {
                     if (ZonaDeTiro.salud == 1) {
                         quitLife("life1", "Interface/life_bar/life_bar_die.png");
                         ZonaDeTiro.salud = 4;                                                
-                        textLife.setText("" + (MainPrado.vidas-=1));
+                        textLife.setText("" + (ZonaDeTiro.vidas-=1));
                     }
                 }
             }
