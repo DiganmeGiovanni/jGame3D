@@ -5,6 +5,7 @@ package mygame;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.asset.TextureKey;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -31,6 +32,8 @@ public class EscenaBodega
     
     // Controles de rigidez solida para los elementos
     public RigidBodyControl escenaRigidBody;
+    private RigidBodyControl basuraRigidBody;
+    private BulletAppState bulletApp;
     
     // Materiales de elementos de escena
     private Material matSuelo;
@@ -64,9 +67,10 @@ public class EscenaBodega
      * 
      * @param assetManager El assetManager que administrara texturas y modelos
      */
-    public EscenaBodega(AssetManager assetManager)
+    public EscenaBodega(AssetManager assetManager, BulletAppState bulletApp)
     {
         this.assetManager = assetManager;
+        this.bulletApp    = bulletApp;
         
         // Construimos la escena
         initMaterials();
@@ -80,6 +84,7 @@ public class EscenaBodega
         
         raizPrincipal.setLocalScale(0.5f);
         configurarFisica();
+        agregarBasura();
     }
     
     /** Configura y agrega las texturas apropiadas a cada elemento de la escena*/
@@ -357,6 +362,36 @@ public class EscenaBodega
         raizPrincipal.attachChild(techoDer);
     }
 
+    /** Agrega cajas de basura a la escena */
+    private void agregarBasura()
+    {
+        for (int i=1,x=-500,z=-500; i<=3; i++,x+=600,z+=500) 
+        {
+            Node tmp = RecursosGraficos.crearCajaBasura();
+            tmp.setLocalTranslation(x, 20, -500);
+            raizPrincipal.attachChild(tmp);
+            configFisicaBasura(tmp);
+            
+//            Node tmp2 = RecursosGraficos.crearCajaLatas();
+//            tmp2.setLocalTranslation(x+100, 30, z+250);
+//            raizPrincipal.attachChild(tmp2);
+//            configFisicaBasura(tmp2);
+//            
+//            Node tmp3 = RecursosGraficos.crearCajaBasura();
+//            tmp3.setLocalTranslation(x-100, 15, z+300);
+//            raizPrincipal.attachChild(tmp3);
+//            configFisicaBasura(tmp3);
+        }
+    }
+    
+    /** Agrega configuracion fisica a la basura*/
+    private void configFisicaBasura(Node tmp)
+    {
+        basuraRigidBody = new RigidBodyControl();
+        tmp.addControl(basuraRigidBody);
+        bulletApp.getPhysicsSpace().add(basuraRigidBody);
+    }
+    
     /** Configura las fuentes de luz de la escena*/
     private void configurarLuces() 
     {
