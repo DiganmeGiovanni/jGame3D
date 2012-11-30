@@ -49,6 +49,8 @@ public class ScrollPanelDialogControlDefinition {
                     label("Play");
                     alignCenter();
                     valignCenter();
+                    interactOnClick("startGame(blank)");
+                    
                   }
                 });
         }});
