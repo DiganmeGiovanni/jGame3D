@@ -414,4 +414,6 @@ public class ZonaDeTiro extends SimpleApplication implements PhysicsCollisionLis
         persLoc.y-=1;
         llama.setLocalTranslation(persLoc);
     }
+    
+    
 }
