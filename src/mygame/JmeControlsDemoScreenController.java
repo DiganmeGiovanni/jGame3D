@@ -176,15 +176,18 @@ public class JmeControlsDemoScreenController implements ScreenController, KeyInp
   private void showCredits() {
     nifty.showPopup(screen, creditsPopup.getId(), null);
   }
-
+    public void startGame(String nextScreen) {
+    nifty.gotoScreen(nextScreen);  // switch to another screen
+  }
   @NiftyEventSubscriber(id="creditsBack")
   public void onCreditsBackClick(final String id, final ButtonClickedEvent event) {
-    nifty.closePopup(creditsPopup.getId());
+    nifty.closePopup(creditsPopup.getId());    
   }
 
   @NiftyEventSubscriber(id="resetScreenButton")
   public void onTestButtonClick(final String id, final ButtonClickedEvent clickedEvent) {
     screen.findElementByName(buttonToDialogMap.get(currentMenuButtonId)).hide(new EndNotify() {
+        
       @Override
       public void perform() {
         nifty.gotoScreen("demo");

@@ -34,7 +34,7 @@ import de.lessvoid.nifty.tools.Color;
 public class SimpleNifty extends SimpleApplication {
 
   private static CommonBuilders builders = new CommonBuilders();
-
+  
   public static void main(String[] args) {
     SimpleNifty app = new SimpleNifty();
     app.start();
@@ -50,16 +50,20 @@ public class SimpleNifty extends SimpleApplication {
     mat.setColor("Color", ColorRGBA.Blue);
     geom.setMaterial(mat);
     rootNode.attachChild(geom);
+    
 
+    
+    
     /**
-     * Nifty-JME integration
+     * Nifty-JME integrationnid
      */
     NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
             assetManager, inputManager, audioRenderer, guiViewPort);
     Nifty nifty = niftyDisplay.getNifty();
+
     guiViewPort.addProcessor(niftyDisplay);
     flyCam.setDragToRotate(true);
-
+    
     /**
      * nifty demo code
      */
@@ -82,8 +86,9 @@ public class SimpleNifty extends SimpleApplication {
     ScrollPanelDialogControlDefinition.register2(nifty);
     ScrollPanelDialogControlDefinition.register3(nifty);
     ScrollPanelDialogControlDefinition.register4(nifty);
-
+    
     createDemoScreen(nifty);
+    createBlanckScreen(nifty);
     nifty.gotoScreen("demo");
   }
 
@@ -142,6 +147,16 @@ public class SimpleNifty extends SimpleApplication {
     }.build(nifty);
     return screen;
   }
+  
+  private static Screen createBlanckScreen(final Nifty nifty){
+      Screen screen= new ScreenBuilder("blank"){
+          
+      }.build(nifty);
+      
+      return screen;
+  }
+  
+  
 
   private static void registerMenuButtonHintStyle(final Nifty nifty) {
     new StyleBuilder() {
@@ -251,6 +266,8 @@ public class SimpleNifty extends SimpleApplication {
       }
     }.build(nifty);
   }
+  
+  
 
   private static void registerConsolePopup(Nifty nifty) {
     new PopupBuilder("consolePopup") {
@@ -382,7 +399,7 @@ public class SimpleNifty extends SimpleApplication {
 
                       {
                         style("creditsImage");
-                        filename("Interface/Creditos_1.png");
+                        filename("Interface/Creditos.png");
                       }
                     });
                   }
