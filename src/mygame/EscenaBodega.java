@@ -18,8 +18,6 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 import com.jme3.texture.Texture;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Construye el escenario de "Bodega", (una bodega de almacen insdustrial)
@@ -32,7 +30,6 @@ public class EscenaBodega
     public Node raizPrincipal = new Node("Bodega");            // Nodo padre de toda la escena
     
     // Controles de rigidez solida para los elementos
-    public List<RigidBodyControl> controlesRigidos = new LinkedList();
     public RigidBodyControl escenaRigidBody;
     
     // Materiales de elementos de escena
@@ -59,7 +56,6 @@ public class EscenaBodega
         // Inicializamos la pared
         pared = new Box(Vector3f.ZERO, 5, 180, 1000);
         pared.scaleTextureCoordinates(new Vector2f(20, 10));
-        
     }
     
     /**
